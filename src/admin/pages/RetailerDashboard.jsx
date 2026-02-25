@@ -12,7 +12,7 @@ import {
   Pie,
   Cell
 } from 'recharts';
-import { dashboardChartData, dashboardPieData } from '../../data/mockData';
+import { dashboardChartData, dashboardPieData } from '../data/mockData';
 
 const COLORS = ['#FF6B6B', '#4DABF7', '#FCC419', '#868E96', '#40C057', '#FA5252'];
 

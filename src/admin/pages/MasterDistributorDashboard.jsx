@@ -12,11 +12,11 @@ import {
   Pie,
   Cell
 } from 'recharts';
-import { dashboardChartData, dashboardPieData } from '../../data/mockData';
+import { dashboardChartData, dashboardPieData } from '../data/mockData';
 
 const COLORS = ['#FF6B6B', '#4DABF7', '#FCC419', '#868E96', '#40C057', '#FA5252'];
 
-const DistributorDashboard = ({ displayRole }) => {
+const MasterDistributorDashboard = ({ displayRole }) => {
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-normal text-gray-800 tracking-tight">
@@ -55,25 +55,25 @@ const DistributorDashboard = ({ displayRole }) => {
           {/* Stats Cards Row */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-white rounded-lg p-6 shadow-sm border border-indigo-400 text-center">
-              <p className="text-xs font-bold text-indigo-500 uppercase tracking-widest mb-2">Total Retailer Volume</p>
-              <h3 className="text-2xl font-bold text-gray-800">₹452,100.00</h3>
-              <p className="text-indigo-500 font-semibold mt-1">Across 42 Retailers</p>
+              <p className="text-xs font-bold text-indigo-500 uppercase tracking-widest mb-2">Total Network Volume</p>
+              <h3 className="text-2xl font-bold text-gray-800">₹8,945,200.50</h3>
+              <p className="text-indigo-500 font-semibold mt-1">Across MD Network</p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border border-orange-400 text-center">
               <p className="text-xs font-bold text-orange-400 uppercase tracking-widest mb-2">My Commission</p>
-              <h3 className="text-2xl font-bold text-gray-800">₹5,240.50</h3>
+              <h3 className="text-2xl font-bold text-gray-800">₹85,240.50</h3>
               <p className="text-orange-400 font-semibold mt-1">This Month</p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border border-green-400 text-center">
-              <p className="text-xs font-bold text-green-500 uppercase tracking-widest mb-2">Active Retailers</p>
-              <h3 className="text-2xl font-bold text-gray-800">38</h3>
-              <p className="text-green-500 font-semibold mt-1">out of 42 totally</p>
+              <p className="text-xs font-bold text-green-500 uppercase tracking-widest mb-2">Active Distributors</p>
+              <h3 className="text-2xl font-bold text-gray-800">12</h3>
+              <p className="text-green-500 font-semibold mt-1">out of 15 totally</p>
             </div>
           </div>
 
           {/* Main Bar Chart */}
           <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
-            <h3 className="text-lg font-bold text-gray-800 text-center mb-6">Usage Report last 7 days</h3>
+            <h3 className="text-lg font-bold text-gray-800 text-center mb-6">Network Usage Report (Last 7 Days)</h3>
             <div className="h-[300px] w-full mt-4">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={dashboardChartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
@@ -90,7 +90,19 @@ const DistributorDashboard = ({ displayRole }) => {
         </div>
 
         <div className="lg:col-span-1 space-y-6">
-          {/* Pie Chart */}
+          <div className="bg-white rounded-lg p-6 shadow-sm border border-blue-500 bg-blue-50">
+            <h3 className="text-sm font-bold text-blue-800 mb-4 uppercase tracking-wider">MD Wallet Info</h3>
+            <div className="space-y-4">
+              <div className="text-center">
+                <p className="text-xs text-blue-600 font-medium mb-1">Available Balance</p>
+                <h4 className="text-3xl font-extrabold text-blue-700">₹250,500</h4>
+              </div>
+              <button className="w-full bg-blue-600 text-white font-medium py-2 rounded-md hover:bg-blue-700 transition">
+                Distribute to Downlines
+              </button>
+            </div>
+          </div>
+
           <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100 flex flex-col h-auto">
             <h3 className="text-sm font-bold text-gray-800 mb-4 uppercase tracking-wider text-center">Service Breakdown</h3>
             <div className="grid grid-cols-2 gap-y-2 gap-x-1 text-[10px] text-gray-500 mb-4">
@@ -114,16 +126,22 @@ const DistributorDashboard = ({ displayRole }) => {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-blue-500 bg-blue-50">
-            <h3 className="text-sm font-bold text-blue-800 mb-4 uppercase tracking-wider">Your Wallet Info</h3>
+          {/* Statistics List */}
+          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+            <h3 className="text-sm font-bold text-gray-800 mb-6 uppercase tracking-wider">Network Details</h3>
             <div className="space-y-4">
-              <div className="text-center">
-                <p className="text-xs text-blue-600 font-medium mb-1">Available Balance</p>
-                <h4 className="text-3xl font-extrabold text-blue-700">₹85,450</h4>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-gray-600 font-medium">Distributors:</span>
+                <span className="text-gray-800 font-bold">15</span>
               </div>
-              <button className="w-full bg-blue-600 text-white font-medium py-2 rounded-md hover:bg-blue-700 transition">
-                Distribute Funds
-              </button>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-gray-600 font-medium">Retailers:</span>
+                <span className="text-gray-800 font-bold">245</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-gray-600 font-medium">Total Network:</span>
+                <span className="text-gray-800 font-bold">260</span>
+              </div>
             </div>
           </div>
         </div>
@@ -132,4 +150,4 @@ const DistributorDashboard = ({ displayRole }) => {
   );
 };
 
-export default DistributorDashboard;
+export default MasterDistributorDashboard;

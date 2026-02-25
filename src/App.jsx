@@ -25,6 +25,15 @@ import AddUser from './admin/pages/AddUser';
 import AllMembers from './admin/pages/AllMembers';
 import KycRequested from './admin/pages/KycRequested';
 import CommissionPlans from './admin/pages/CommissionPlans';
+import ServiceMatrix from './admin/pages/ServiceMatrix';
+import Ledger from './admin/pages/Ledger';
+import CreditCardApplyRequest from './admin/pages/CreditCardApplyRequest';
+import PanCardHistory from './admin/pages/PanCardHistory';
+import PayoutHistory from './admin/pages/PayoutHistory';
+import PgAddFund from './admin/pages/PgAddFund';
+import AepsStatement from './admin/pages/AepsStatement';
+import DmtReport from './admin/pages/DmtReport';
+import BbpsHistory from './admin/pages/BbpsHistory';
 import Login from './admin/pages/Login';
 
 const WebsiteLayout = () => {
@@ -59,13 +68,13 @@ const router = createBrowserRouter([
       { path: "/term-condition", element: <TermsConditions /> },
     ],
   },
-  
+
   // Admin Login Route (standalone)
   {
     path: "/login",
     element: <Login />,
   },
-  
+
   // Admin Layout Routes
   {
     path: "/admin",
@@ -76,6 +85,15 @@ const router = createBrowserRouter([
       { path: "all-members", element: <AllMembers /> },
       { path: "kyc-requested", element: <KycRequested /> },
       { path: "commission-plans", element: <CommissionPlans /> },
+      { path: "service-matrix", element: <ServiceMatrix /> },
+      { path: "ledger", element: <Ledger /> },
+      { path: "credit-card-apply-request", element: <CreditCardApplyRequest /> },
+      { path: "pan-card-history", element: <PanCardHistory /> },
+      { path: "payout-history", element: <PayoutHistory /> },
+      { path: "pg-add-fund", element: <PgAddFund /> },
+      { path: "aeps-statement", element: <AepsStatement /> },
+      { path: "dmt-report", element: <DmtReport /> },
+      { path: "bbps-history", element: <BbpsHistory /> },
     ],
   },
 ]);

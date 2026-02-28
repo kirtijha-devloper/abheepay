@@ -1,148 +1,269 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import {
-  BarChart,
-  Bar,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
   PieChart,
   Pie,
   Cell
 } from 'recharts';
+import {
+  SmartphoneNfc, Send, Wallet, Activity, Users, Map,
+  CreditCard, ShieldCheck, FileText, Banknote, ShieldAlert, LineChart, Landmark,
+  UserCheck, Plane, Building2, Ticket
+} from 'lucide-react';
 import { dashboardChartData, dashboardPieData } from '../data/mockData';
 
-const COLORS = ['#FF6B6B', '#4DABF7', '#FCC419', '#868E96', '#40C057', '#FA5252'];
+const COLORS = ['#14B8A6', '#3B82F6', '#F59E0B', '#64748B', '#10B981', '#EF4444'];
+
+const renderCustomizedLabel = ({ cx, cy }) => {
+  return (
+    <text x={cx} y={cy} fill="#1e293b" textAnchor="middle" dominantBaseline="central">
+      <tspan x={cx} py="-10" fontSize="14" fontWeight="600" fill="#64748b">Total</tspan>
+      <tspan x={cx} dy="24" fontSize="22" fontWeight="800">100%</tspan>
+    </text>
+  );
+};
+
+const servicesData = [
+  { id: 'aeps', title: 'AEPS', icon: <span className="text-2xl font-bold text-slate-700 italic">AE<span className="text-teal-500">P</span>S</span>, borderColor: 'border-purple-200', borderHover: 'hover:border-purple-400', bgHover: 'hover:bg-purple-50' },
+  { id: 'bbps', title: 'BBPS', icon: <FileText className="w-8 h-8 text-blue-500" strokeWidth={1.5} />, borderColor: 'border-blue-200', borderHover: 'hover:border-blue-400', bgHover: 'hover:bg-blue-50' },
+  { id: 'dmt', title: 'DMT', icon: <Send className="w-8 h-8 text-indigo-500" strokeWidth={1.5} />, borderColor: 'border-indigo-200', borderHover: 'hover:border-indigo-400', bgHover: 'hover:bg-indigo-50' },
+  { id: 'recharge', title: 'Recharge', icon: <SmartphoneNfc className="w-8 h-8 text-orange-500" strokeWidth={1.5} />, borderColor: 'border-orange-200', borderHover: 'hover:border-orange-400', bgHover: 'hover:bg-orange-50' },
+  { id: 'loan', title: 'Loan', icon: <Banknote className="w-8 h-8 text-emerald-500" strokeWidth={1.5} />, borderColor: 'border-emerald-200', borderHover: 'hover:border-emerald-400', bgHover: 'hover:bg-emerald-50' },
+  { id: 'credit-card', title: 'Credit Card', icon: <CreditCard className="w-8 h-8 text-slate-700" strokeWidth={1.5} />, borderColor: 'border-slate-200', borderHover: 'hover:border-slate-400', bgHover: 'hover:bg-slate-50' },
+  { id: 'cc-bill-pay', title: 'CC Bill Pay', icon: <Wallet className="w-8 h-8 text-red-500" strokeWidth={1.5} />, borderColor: 'border-red-200', borderHover: 'hover:border-red-400', bgHover: 'hover:bg-red-50' },
+  { id: 'payout', title: 'Payout', icon: <Landmark className="w-8 h-8 text-teal-600" strokeWidth={1.5} />, borderColor: 'border-teal-200', borderHover: 'hover:border-teal-400', bgHover: 'hover:bg-teal-50' },
+  { id: 'matm', title: 'MATM', icon: <CreditCard className="w-8 h-8 text-amber-500" strokeWidth={1.5} />, borderColor: 'border-amber-200', borderHover: 'hover:border-amber-400', bgHover: 'hover:bg-amber-50' },
+  { id: 'bank-account', title: 'Bank Account', icon: <Building2 className="w-8 h-8 text-blue-600" strokeWidth={1.5} />, borderColor: 'border-blue-200', borderHover: 'hover:border-blue-400', bgHover: 'hover:bg-blue-50' },
+  { id: 'pan-apply', title: 'PAN Apply', icon: <ShieldCheck className="w-8 h-8 text-indigo-600" strokeWidth={1.5} />, borderColor: 'border-indigo-200', borderHover: 'hover:border-indigo-400', bgHover: 'hover:bg-indigo-50' },
+  { id: 'ppi-wallet', title: 'PPI Wallet', icon: <Wallet className="w-8 h-8 text-purple-500" strokeWidth={1.5} />, borderColor: 'border-purple-200', borderHover: 'hover:border-purple-400', bgHover: 'hover:bg-purple-50' },
+  { id: 'travel-booking', title: 'Travel Booking', icon: <Plane className="w-8 h-8 text-sky-500" strokeWidth={1.5} />, borderColor: 'border-sky-200', borderHover: 'hover:border-sky-400', bgHover: 'hover:bg-sky-50' },
+];
 
 const SuperDistributorDashboard = ({ displayRole }) => {
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-normal text-gray-800 tracking-tight">
-        Hello <span className="font-bold">{displayRole}</span>,
-      </h1>
+    <div className="space-y-8 animate-in fade-in duration-500">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-3xl font-bold text-slate-800 tracking-tight">
+          Welcome back, <span className="text-cyan-600">{displayRole}</span>
+        </h1>
+        <p className="text-slate-500 font-medium">Manage your empire and track top-level metrics.</p>
+      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div className="lg:col-span-3 space-y-6">
-          {/* Top 3 Cards */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        <div className="xl:col-span-2 space-y-8">
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
-              <div className="w-16 h-16 rounded-full border-2 border-red-500 flex items-center justify-center mb-4">
-                <span className="text-xl font-bold text-gray-700 italic">A<span className="text-green-500">P</span>S<span className="text-orange-500 text-sm">)</span></span>
+            <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-md transition-shadow border border-slate-100/60 flex flex-col items-start gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center shadow-inner">
+                <Users className="w-7 h-7" strokeWidth={1.5} />
               </div>
-              <h2 className="text-lg font-bold text-gray-800">AEPS</h2>
-              <p className="text-gray-500 text-sm mt-1">Today Volume: 0</p>
+              <div className="space-y-1">
+                <p className="text-slate-500 text-sm font-semibold tracking-wide uppercase">Total Users</p>
+                <div className="flex items-baseline gap-2">
+                  <h2 className="text-3xl font-extrabold text-slate-800">0</h2>
+                  <span className="text-xs font-semibold text-teal-600 bg-teal-50 px-2 py-0.5 rounded-full">+0% today</span>
+                </div>
+              </div>
             </div>
 
-            <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
-              <div className="w-16 h-16 rounded-full border-2 border-indigo-600 flex items-center justify-center mb-4 bg-indigo-50">
-                <div className="text-xl text-yellow-500">💸</div>
+            <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-md transition-shadow border border-slate-100/60 flex flex-col items-start gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-inner">
+                <UserCheck className="w-7 h-7" strokeWidth={1.5} />
               </div>
-              <h2 className="text-lg font-bold text-gray-800">DMT</h2>
-              <p className="text-gray-500 text-sm mt-1">Today Volume: 0</p>
+              <div className="space-y-1">
+                <p className="text-slate-500 text-sm font-semibold tracking-wide uppercase">Active Users</p>
+                <div className="flex items-baseline gap-2">
+                  <h2 className="text-3xl font-extrabold text-slate-800">0</h2>
+                  <span className="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">+0% today</span>
+                </div>
+              </div>
             </div>
 
-            <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
-              <div className="w-16 h-16 rounded-full border-2 border-red-500 flex items-center justify-center mb-4 bg-red-50">
-                <div className="text-xl text-green-500">👝</div>
+            <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-md transition-shadow border border-slate-100/60 flex flex-col items-start gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center shadow-inner">
+                <CreditCard className="w-7 h-7" strokeWidth={1.5} />
               </div>
-              <h2 className="text-lg font-bold text-gray-800">WALLET ENQUIRY</h2>
-              <p className="text-gray-500 text-sm mt-1">Today Volume: 0</p>
+              <div className="space-y-1">
+                <p className="text-slate-500 text-sm font-semibold tracking-wide uppercase">Todays Transaction</p>
+                <div className="flex items-baseline gap-2">
+                  <h2 className="text-3xl font-extrabold text-slate-800">₹0</h2>
+                  <span className="text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">+0% today</span>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Stats Cards Row */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white rounded-lg p-6 shadow-sm border border-indigo-400 text-center">
-              <p className="text-xs font-bold text-indigo-500 uppercase tracking-widest mb-2">Total Zone Volume</p>
-              <h3 className="text-2xl font-bold text-gray-800">₹24,198,400.00</h3>
-              <p className="text-indigo-500 font-semibold mt-1">Across SD Zone</p>
-            </div>
-            <div className="bg-white rounded-lg p-6 shadow-sm border border-orange-400 text-center">
-              <p className="text-xs font-bold text-orange-400 uppercase tracking-widest mb-2">My Commission</p>
-              <h3 className="text-2xl font-bold text-gray-800">₹142,500.25</h3>
-              <p className="text-orange-400 font-semibold mt-1">This Month</p>
-            </div>
-            <div className="bg-white rounded-lg p-6 shadow-sm border border-green-400 text-center">
-              <p className="text-xs font-bold text-green-500 uppercase tracking-widest mb-2">Active MDs</p>
-              <h3 className="text-2xl font-bold text-gray-800">4</h3>
-              <p className="text-green-500 font-semibold mt-1">out of 5 totally</p>
+          {/* Actual Associated Services */}
+          <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-md transition-shadow border border-slate-100/60">
+            <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-6">Actual Associated Services</h3>
+            <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+              {servicesData.map((service) => (
+                <Link
+                  to={`/admin/services/${service.id}`}
+                  key={service.id}
+                  className={`bg-slate-50 rounded-2xl p-4 border border-slate-100 ${service.borderHover} ${service.bgHover} transition-all duration-300 flex flex-col items-center justify-center text-center cursor-pointer h-[110px] shadow-sm hover:shadow-md block`}
+                >
+                  <div className="mb-3 transform hover:scale-110 transition-transform duration-300 drop-shadow-sm flex items-center justify-center h-10 w-10">
+                    {service.icon}
+                  </div>
+                  <span className="text-[11px] font-bold text-slate-700">{service.title}</span>
+                </Link>
+              ))}
             </div>
           </div>
 
-          {/* Main Bar Chart */}
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
-            <h3 className="text-lg font-bold text-gray-800 text-center mb-6">Zone Usage Report (Last 7 Days)</h3>
-            <div className="h-[300px] w-full mt-4">
+          <div className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-md transition-shadow border border-slate-100/60">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h3 className="text-lg font-bold text-slate-800">Zone Usage Report</h3>
+                <p className="text-sm font-medium text-slate-500 mt-0.5">Last 7 days performance</p>
+              </div>
+              <div className="flex gap-4 text-sm font-medium">
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-indigo-500"></span> PG
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-teal-400"></span> Payout
+                </div>
+              </div>
+            </div>
+
+            <div className="h-[320px] w-full mt-4">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={dashboardChartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                  <YAxis axisLine={false} tickLine={false} tickFormatter={(value) => `${value}`} />
-                  <Tooltip cursor={{ fill: 'transparent' }} />
-                  <Bar dataKey="PG" fill="#4263EB" radius={[2, 2, 0, 0]} barSize={20} />
-                  <Bar dataKey="Payout" fill="#8CE99A" radius={[2, 2, 0, 0]} barSize={20} />
-                </BarChart>
+                <AreaChart data={dashboardChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorPG4" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#6366F1" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#6366F1" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="colorPayout4" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#2DD4BF" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#2DD4BF" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 13, fontWeight: 500 }} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 13, fontWeight: 500 }} tickFormatter={(val) => `₹${val / 1000}k`} />
+                  <Tooltip
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
+                    cursor={{ stroke: '#cbd5e1', strokeWidth: 1, strokeDasharray: '4 4' }}
+                  />
+                  <Area type="monotone" dataKey="PG" stroke="#6366F1" strokeWidth={3} fillOpacity={1} fill="url(#colorPG4)" />
+                  <Area type="monotone" dataKey="Payout" stroke="#2DD4BF" strokeWidth={3} fillOpacity={1} fill="url(#colorPayout4)" />
+                </AreaChart>
               </ResponsiveContainer>
             </div>
           </div>
         </div>
 
-        <div className="lg:col-span-1 space-y-6">
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-blue-500 bg-blue-50">
-            <h3 className="text-sm font-bold text-blue-800 mb-4 uppercase tracking-wider">SD Wallet Info</h3>
-            <div className="space-y-4">
-              <div className="text-center">
-                <p className="text-xs text-blue-600 font-medium mb-1">Available Balance</p>
-                <h4 className="text-3xl font-extrabold text-blue-700">₹850,000</h4>
+        <div className="xl:col-span-1 space-y-8">
+
+          <div className="rounded-3xl p-8 shadow-lg bg-gradient-to-br from-slate-800 to-cyan-900 border border-slate-700 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-cyan-500/10 rounded-full blur-2xl -ml-10 -mb-10"></div>
+
+            <div className="relative z-10 flex flex-col gap-6">
+              <div className="flex justify-between items-start">
+                <div className="p-2.5 bg-white/10 rounded-xl backdrop-blur-sm border border-white/10">
+                  <Wallet className="w-6 h-6 text-cyan-400" strokeWidth={2} />
+                </div>
               </div>
-              <button className="w-full bg-blue-600 text-white font-medium py-2 rounded-md hover:bg-blue-700 transition">
-                Manage Zone Funds
-              </button>
+
+              <div>
+                <p className="text-slate-400 text-sm font-medium tracking-wide">TOTAL SYSTEM VOLUME</p>
+                <h3 className="text-4xl font-extrabold text-white mt-1 tracking-tight">₹24.5M</h3>
+                <p className="text-cyan-400 mt-2 text-sm">₹245K Total Comm.</p>
+              </div>
+
+              <div className="pt-2">
+                <button className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-3 px-4 rounded-xl transition-colors shadow-lg shadow-cyan-500/25">
+                  View Detailed P&L
+                </button>
+              </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100 flex flex-col h-auto">
-            <h3 className="text-sm font-bold text-gray-800 mb-4 uppercase tracking-wider text-center">Service Breakdown</h3>
-            <div className="grid grid-cols-2 gap-y-2 gap-x-1 text-[10px] text-gray-500 mb-4">
-              <div className="flex items-center"><span className="w-4 h-2 bg-[#FF6B6B] mr-1"></span>AEPS</div>
-              <div className="flex items-center"><span className="w-4 h-2 bg-[#4DABF7] mr-1"></span>Payout</div>
-              <div className="flex items-center"><span className="w-4 h-2 bg-[#FCC419] mr-1"></span>DMT</div>
-              <div className="flex items-center"><span className="w-4 h-2 bg-[#868E96] mr-1"></span>Recharge</div>
-              <div className="flex items-center"><span className="w-4 h-2 bg-[#8b5cf6] mr-1"></span>BBPS</div>
+          <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100/60 flex flex-col gap-6">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-bold text-slate-800">Zone Details</h3>
+              <div className="p-2 bg-slate-50 text-slate-500 rounded-lg">
+                <Map className="w-5 h-5" strokeWidth={1.5} />
+              </div>
             </div>
-            <div className="w-full h-[200px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={dashboardPieData} cx="50%" cy="50%" innerRadius={50} outerRadius={75} fill="#8884d8" paddingAngle={2} dataKey="value">
-                    {dashboardPieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
 
-          {/* Statistics List */}
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
-            <h3 className="text-sm font-bold text-gray-800 mb-6 uppercase tracking-wider">Zone Details</h3>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-600 font-medium">Master Dist:</span>
-                <span className="text-gray-800 font-bold">5</span>
+            <div className="flex flex-col gap-3">
+              <div className="flex justify-between items-center bg-slate-50 p-3.5 rounded-2xl">
+                <div className="flex flex-col">
+                  <span className="text-slate-500 font-medium text-xs uppercase tracking-wider">Master Dist</span>
+                  <span className="text-slate-800 font-bold text-lg">5</span>
+                </div>
+                <div className="text-right flex flex-col">
+                  <span className="text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded-md text-xs">4 Active</span>
+                </div>
               </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-600 font-medium">Distributors:</span>
-                <span className="text-gray-800 font-bold">45</span>
+              <div className="flex justify-between items-center bg-slate-50 p-3.5 rounded-2xl">
+                <div className="flex flex-col">
+                  <span className="text-slate-500 font-medium text-xs uppercase tracking-wider">Distributors</span>
+                  <span className="text-slate-800 font-bold text-lg">45</span>
+                </div>
               </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-600 font-medium">Retailers:</span>
-                <span className="text-gray-800 font-bold">850</span>
+              <div className="flex justify-between items-center bg-slate-50 p-3.5 rounded-2xl">
+                <div className="flex flex-col">
+                  <span className="text-slate-500 font-medium text-xs uppercase tracking-wider">Retailers</span>
+                  <span className="text-slate-800 font-bold text-lg">850</span>
+                </div>
               </div>
             </div>
+
+            <hr className="border-slate-100" />
+
+            <div className="flex flex-col gap-4">
+              <h3 className="text-sm font-bold text-slate-800 tracking-wide">Service Breakdown</h3>
+
+              <div className="w-full h-[180px] relative">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={dashboardPieData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={55}
+                      outerRadius={80}
+                      paddingAngle={5}
+                      dataKey="value"
+                      stroke="none"
+                      cornerRadius={4}
+                      labelLine={false}
+                      label={renderCustomizedLabel}
+                    >
+                      {dashboardPieData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', fontWeight: 600 }}
+                      itemStyle={{ color: '#1e293b' }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div className="flex flex-wrap gap-2 justify-center mt-1">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-600"><span className="w-2.5 h-2.5 rounded-full bg-[#14B8A6]"></span>AEPS</div>
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-600"><span className="w-2.5 h-2.5 rounded-full bg-[#3B82F6]"></span>Payout</div>
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-600"><span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B]"></span>DMT</div>
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-600"><span className="w-2.5 h-2.5 rounded-full bg-[#64748B]"></span>Recharge</div>
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-600"><span className="w-2.5 h-2.5 rounded-full bg-[#10B981]"></span>BBPS</div>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>

@@ -1,232 +1,190 @@
 import React, { useState } from 'react';
+import {
+  List, MapPin, Users, Settings, CreditCard, Wallet, Server,
+  Search, Filter, Plus, Edit2, Trash2, ArrowUpDown, Percent
+} from 'lucide-react';
 import { commissionsData } from '../data/mockData';
 
 const tabs = [
-  'Commission List',
-  'Map Commission List',
-  'Distributor Commission Plan',
-  'Service Fee Setup',
-  'Payout Charges',
-  'Add fund PG charges & commission',
-  'API PG charges'
+  { id: 'Commission List', label: 'Commission List', icon: <List className="w-4 h-4 mr-2" /> },
+  { id: 'Map Commission List', label: 'Map Commission List', icon: <MapPin className="w-4 h-4 mr-2" /> },
+  { id: 'Distributor Commission Plan', label: 'Distributor Plan', icon: <Users className="w-4 h-4 mr-2" /> },
+  { id: 'Service Fee Setup', label: 'Service Fee Setup', icon: <Settings className="w-4 h-4 mr-2" /> },
+  { id: 'Payout Charges', label: 'Payout Charges', icon: <CreditCard className="w-4 h-4 mr-2" /> },
+  { id: 'Add fund PG charges & commission', label: 'Add Fund PG', icon: <Wallet className="w-4 h-4 mr-2" /> },
+  { id: 'API PG charges', label: 'API PG Charges', icon: <Server className="w-4 h-4 mr-2" /> }
 ];
 
 const CommissionPlans = () => {
   const [activeTab, setActiveTab] = useState('Commission List');
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-6 max-w-7xl mx-auto pb-10 animate-in fade-in duration-500">
+
+      {/* Dynamic Header Section */}
+      <div className="rounded-3xl p-8 shadow-md relative overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-700">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
+        <div className="absolute bottom-0 left-0 w-40 h-40 bg-white/10 rounded-full blur-2xl -ml-10 -mb-10"></div>
+
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex flex-col gap-2 text-white">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm border border-white/20 shadow-inner">
+                <Percent className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-extrabold tracking-tight">
+                  Commission Plans
+                </h1>
+                <p className="text-blue-100 font-medium mt-1">Manage and configure all commission structures, fees, and payout settings.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Horizontal Nav Tabs */}
-      <div className="bg-white border-b border-gray-200">
-        <ul className="flex overflow-x-auto hide-scrollbar whitespace-nowrap text-sm font-medium text-center text-gray-500">
-          {tabs.map((tab) => (
-            <li key={tab} className="me-2">
-              <button
-                onClick={() => setActiveTab(tab)}
-                className={`inline-block p-4 rounded-t-lg border-b-2 ${activeTab === tab
-                  ? 'text-blue-600 border-blue-600 bg-blue-50/50'
-                  : 'border-transparent hover:text-gray-600 hover:border-gray-300 hover:bg-gray-50'
-                  }`}
-              >
-                {tab}
-              </button>
-            </li>
-          ))}
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-2">
+        <ul className="flex overflow-x-auto hide-scrollbar text-sm font-medium text-center text-slate-500 gap-2">
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <li key={tab.id} className="whitespace-nowrap flex-shrink-0">
+                <button
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center px-5 py-3 rounded-xl transition-all duration-300 ${isActive
+                      ? 'bg-blue-50 text-blue-700 font-bold shadow-sm border border-blue-100'
+                      : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50 border border-transparent hover:border-slate-100'
+                    }`}
+                >
+                  {tab.icon}
+                  {tab.label}
+                </button>
+              </li>
+            );
+          })}
         </ul>
       </div>
 
-      {/* Breadcrumb Area */}
-      <div className="text-sm font-medium text-gray-500 px-2 mt-4">
-        <span className="text-gray-400">Home</span> <span className="mx-2">/</span> <span className="text-gray-500">Commissions Plan</span>
-      </div>
+      <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-6 md:p-8">
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
         {/* Form Area */}
-        <form className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-x-4 gap-y-6 mb-8 pt-4">
+        <div className="mb-8">
+          <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center">
+            <Plus className="w-5 h-5 mr-2 text-blue-600" />
+            Add New Commission
+          </h3>
+          <form className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-x-6 gap-y-6">
 
-          {/* Packages */}
-          <div className="space-y-1 text-[11px] font-bold text-gray-800 uppercase tracking-wide">
-            <label className="block mb-2">PACKAGES</label>
-            <select className="w-full border border-gray-200 rounded px-3 py-2.5 text-gray-500 font-normal focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white">
-              <option>--Select Packages--</option>
-              <option>Retailer</option>
-              <option>Distributor</option>
-            </select>
-          </div>
+            {/* Form Fields with modern styling */}
+            {[
+              { label: 'PACKAGES', type: 'select', options: ['--Select Packages--', 'Retailer', 'Distributor'] },
+              { label: 'SERVICE', type: 'select', options: ['--Select a Service--', 'AEPS', 'DMT'] },
+              { label: 'FROM AMOUNT', type: 'text', placeholder: 'e.g., 0' },
+              { label: 'TO AMOUNT', type: 'text', placeholder: 'e.g., 1000' },
+              { label: 'CHARGE IN', type: 'select', options: ['--Select--', 'Flat', 'Percentage'] },
+              { label: 'CHARGE', type: 'text', placeholder: 'e.g., 50' },
+              { label: 'COMMISSION IN', type: 'select', options: ['--Select--', 'Flat', 'Percentage'] },
+              { label: 'COMMISSION', type: 'text', placeholder: 'e.g., 20' },
+              { label: 'TDS IN', type: 'select', options: ['--Select--', 'Flat', 'Percentage'] },
+              { label: 'TDS', type: 'text', placeholder: 'e.g., 10' },
+            ].map((field, idx) => (
+              <div key={idx} className="space-y-1.5">
+                <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest">{field.label}</label>
+                {field.type === 'select' ? (
+                  <select className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-600 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-slate-50 hover:bg-slate-100/50 transition-colors appearance-none">
+                    {field.options.map((opt, i) => <option key={i}>{opt}</option>)}
+                  </select>
+                ) : (
+                  <input type={field.type} placeholder={field.placeholder} className="w-full border border-slate-200 rounded-xl px-4 py-3 text-slate-600 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-slate-50 hover:bg-slate-100/50 transition-colors placeholder-slate-400" />
+                )}
+              </div>
+            ))}
 
-          {/* Service */}
-          <div className="space-y-1 text-[11px] font-bold text-gray-800 uppercase tracking-wide">
-            <label className="block mb-2">SERVICE</label>
-            <select className="w-full border border-gray-200 rounded px-3 py-2.5 text-gray-500 font-normal focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white">
-              <option>--Select a Service--</option>
-              <option>AEPS</option>
-              <option>DMT</option>
-            </select>
-          </div>
+            {/* Buttons */}
+            <div className="flex items-end gap-3 h-full xl:col-span-2 mt-4 xl:mt-0">
+              <button type="button" className="bg-emerald-500 text-white hover:bg-emerald-600 px-8 py-3 rounded-xl font-bold text-sm transition-colors shadow-sm shadow-emerald-500/20 flex-1">
+                Submit
+              </button>
+              <button type="button" className="bg-slate-200 text-slate-700 hover:bg-slate-300 hover:text-slate-800 px-8 py-3 rounded-xl font-bold text-sm transition-colors shadow-sm flex-1">
+                Reset
+              </button>
+            </div>
+          </form>
+        </div>
 
-          {/* From Amount */}
-          <div className="space-y-1 text-[11px] font-bold text-gray-800 uppercase tracking-wide">
-            <label className="block mb-2">FROM AMOUNT</label>
-            <input type="text" placeholder="e.g., 0" className="w-full border border-gray-200 rounded px-3 py-2.5 text-gray-500 font-normal focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-gray-300" />
-          </div>
-
-          {/* To Amount */}
-          <div className="space-y-1 text-[11px] font-bold text-gray-800 uppercase tracking-wide">
-            <label className="block mb-2">TO AMOUNT</label>
-            <input type="text" placeholder="e.g., 1000" className="w-full border border-gray-200 rounded px-3 py-2.5 text-gray-500 font-normal focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-gray-300" />
-          </div>
-
-          {/* Charge In */}
-          <div className="space-y-1 text-[11px] font-bold text-gray-800 uppercase tracking-wide">
-            <label className="block mb-2">CHARGE IN</label>
-            <select className="w-full border border-gray-200 rounded px-3 py-2.5 text-gray-500 font-normal focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white">
-              <option>--Select--</option>
-              <option>Flat</option>
-              <option>Percentage</option>
-            </select>
-          </div>
-
-          {/* Charge */}
-          <div className="space-y-1 text-[11px] font-bold text-gray-800 uppercase tracking-wide">
-            <label className="block mb-2">CHARGE</label>
-            <input type="text" placeholder="e.g., 50" className="w-full border border-gray-200 rounded px-3 py-2.5 text-gray-500 font-normal focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-gray-300" />
-          </div>
-
-          {/* Commission In */}
-          <div className="space-y-1 text-[11px] font-bold text-gray-800 uppercase tracking-wide">
-            <label className="block mb-2">COMMISSION IN</label>
-            <select className="w-full border border-gray-200 rounded px-3 py-2.5 text-gray-500 font-normal focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white">
-              <option>--Select--</option>
-              <option>Flat</option>
-              <option>Percentage</option>
-            </select>
-          </div>
-
-          {/* Commission */}
-          <div className="space-y-1 text-[11px] font-bold text-gray-800 uppercase tracking-wide">
-            <label className="block mb-2">COMMISSION</label>
-            <input type="text" placeholder="e.g., 20" className="w-full border border-gray-200 rounded px-3 py-2.5 text-gray-500 font-normal focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-gray-300" />
-          </div>
-
-          {/* TDS In */}
-          <div className="space-y-1 text-[11px] font-bold text-gray-800 uppercase tracking-wide">
-            <label className="block mb-2">TDS IN</label>
-            <select className="w-full border border-gray-200 rounded px-3 py-2.5 text-gray-500 font-normal focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white">
-              <option>--Select--</option>
-              <option>Flat</option>
-              <option>Percentage</option>
-            </select>
-          </div>
-
-          {/* TDS */}
-          <div className="space-y-1 text-[11px] font-bold text-gray-800 uppercase tracking-wide">
-            <label className="block mb-2">TDS</label>
-            <input type="text" placeholder="e.g., 10" className="w-full border border-gray-200 rounded px-3 py-2.5 text-gray-500 font-normal focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-gray-300" />
-          </div>
-
-          {/* Buttons */}
-          <div className="flex items-end gap-3 h-full pb-0.5 xl:col-span-2">
-            <button type="button" className="bg-[#74d754] text-white hover:bg-[#68c14b] px-6 py-2 rounded font-medium text-sm transition-colors shadow-sm">
-              Submit
-            </button>
-            <button type="button" className="bg-[#8b9ba8] text-white hover:bg-[#7b8a96] px-6 py-2 rounded font-medium text-sm transition-colors shadow-sm">
-              Reset
-            </button>
-          </div>
-        </form>
+        <hr className="border-slate-100 mb-8" />
 
         {/* Table Controls */}
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
-          <div className="flex items-center text-sm text-gray-600">
-            <select className="border border-gray-300 rounded px-2 py-1.5 mr-2 focus:outline-none focus:border-blue-500 bg-white">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
+          <div className="flex items-center text-sm font-medium text-slate-500">
+            Show
+            <select className="border border-slate-200 rounded-lg px-3 py-2 mx-2 focus:outline-none focus:border-blue-500 bg-slate-50 font-bold text-slate-700">
               <option>10</option>
               <option>25</option>
               <option>50</option>
               <option>100</option>
             </select>
-            <span>entries per page</span>
+            entries
           </div>
 
-          <div className="relative w-full sm:w-64">
+          <div className="relative w-full sm:w-72">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search className="h-4 w-4 text-slate-400" />
+            </div>
             <input
               type="text"
-              placeholder="Search..."
-              className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+              placeholder="Search commissions..."
+              className="w-full border border-slate-200 bg-slate-50 rounded-xl pl-10 pr-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
             />
           </div>
         </div>
 
         {/* Data Table */}
-        <div className="overflow-x-auto border border-gray-200 rounded-md">
+        <div className="overflow-x-auto rounded-2xl border border-slate-100 shadow-sm">
           <table className="w-full text-sm text-center">
-            <thead className="bg-[#F8F9FA] text-gray-800 font-bold border-b border-gray-200 uppercase text-[11px] tracking-wide">
+            <thead className="bg-slate-50 text-slate-600 font-bold border-b border-slate-100 uppercase text-[10px] tracking-wider">
               <tr>
-                <th className="px-3 py-4 border-r border-gray-200">
-                  <div className="flex justify-center items-center">
-                    SL NO. <div className="ml-1 flex flex-col text-[8px] text-gray-400"><span>▲</span><span>▼</span></div>
-                  </div>
-                </th>
-                <th className="px-3 py-4 border-r border-gray-200">
-                  <div className="flex justify-center items-center">
-                    PACKAGES <div className="ml-1 flex flex-col text-[8px] text-gray-400"><span>▲</span><span>▼</span></div>
-                  </div>
-                </th>
-                <th className="px-3 py-4 border-r border-gray-200">SERVICE</th>
-                <th className="px-3 py-4 border-r border-gray-200">SUB SERVICE</th>
-                <th className="px-3 py-4 border-r border-gray-200">
-                  <div className="flex justify-center items-center">
-                    FROM AMOUNT <div className="ml-1 flex flex-col text-[8px] text-gray-400"><span>▲</span><span>▼</span></div>
-                  </div>
-                </th>
-                <th className="px-3 py-4 border-r border-gray-200">
-                  <div className="flex justify-center items-center">
-                    TO AMOUNT <div className="ml-1 flex flex-col text-[8px] text-gray-400"><span>▲</span><span>▼</span></div>
-                  </div>
-                </th>
-                <th className="px-3 py-4 border-r border-gray-200">CHARGE</th>
-                <th className="px-3 py-4 border-r border-gray-200">COMMISSION</th>
-                <th className="px-3 py-4 border-r border-gray-200">TDS</th>
-                <th className="px-3 py-4 border-r border-gray-200">
-                  <div className="flex justify-center items-center">
-                    CHARGE IN <div className="ml-1 flex flex-col text-[8px] text-gray-400"><span>▲</span><span>▼</span></div>
-                  </div>
-                </th>
-                <th className="px-3 py-4 border-r border-gray-200">
-                  <div className="flex justify-center items-center">
-                    COMMISSION IN <div className="ml-1 flex flex-col text-[8px] text-gray-400"><span>▲</span><span>▼</span></div>
-                  </div>
-                </th>
-                <th className="px-3 py-4 border-r border-gray-200">
-                  <div className="flex justify-center items-center">
-                    TDS IN <div className="ml-1 flex flex-col text-[8px] text-gray-400"><span>▲</span><span>▼</span></div>
-                  </div>
-                </th>
-                <th className="px-3 py-4">ACTION</th>
+                {['SL NO.', 'PACKAGES', 'SERVICE', 'SUB SERVICE', 'FROM AMOUNT', 'TO AMOUNT', 'CHARGE', 'COMMISSION', 'TDS', 'CHARGE IN', 'COMMISSION IN', 'TDS IN', 'ACTION'].map((header, i) => (
+                  <th key={i} className="px-4 py-5 whitespace-nowrap border-r border-slate-100 last:border-r-0">
+                    <div className="flex justify-center items-center gap-1">
+                      {header}
+                      {['SL NO.', 'PACKAGES', 'FROM AMOUNT', 'TO AMOUNT', 'CHARGE IN', 'COMMISSION IN', 'TDS IN'].includes(header) && (
+                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                      )}
+                    </div>
+                  </th>
+                ))}
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-100">
               {commissionsData.map((row) => (
-                <tr key={row.id} className="border-b border-gray-200 bg-white">
-                  <td className="px-3 py-6 border-r border-gray-200 text-gray-600 font-medium">{row.id}</td>
-                  <td className="px-3 py-6 border-r border-gray-200 text-gray-600">{row.packages}</td>
-                  <td className="px-3 py-6 border-r border-gray-200 text-gray-600">{row.service}</td>
-                  <td className="px-3 py-6 border-r border-gray-200 text-gray-600">{row.subService}</td>
-                  <td className="px-3 py-6 border-r border-gray-200 text-gray-800">{row.fromAmount}</td>
-                  <td className="px-3 py-6 border-r border-gray-200 text-gray-800">{row.toAmount}</td>
-                  <td className="px-3 py-6 border-r border-gray-200 text-gray-600">{row.charge}</td>
-                  <td className="px-3 py-6 border-r border-gray-200 text-gray-600">{row.commission}</td>
-                  <td className="px-3 py-6 border-r border-gray-200 text-gray-600">{row.tds}</td>
-                  <td className="px-3 py-6 border-r border-gray-200 text-gray-600">{row.chargeIn}</td>
-                  <td className="px-3 py-6 border-r border-gray-200 text-gray-600">{row.commissionIn}</td>
-                  <td className="px-3 py-6 border-r border-gray-200 text-gray-600">{row.tdsIn}</td>
-                  <td className="px-3 py-6">
-                    <div className="flex flex-col gap-1 items-center justify-center h-full">
-                      <button className="bg-[#FCC419] hover:bg-[#eab308] text-white text-[10px] font-bold px-3 py-1 rounded w-16 transition-colors shadow-[0_2px_4px_rgba(252,196,25,0.4)]">
-                        Edit
+                <tr key={row.id} className="bg-white hover:bg-slate-50/80 transition-colors group">
+                  <td className="px-4 py-4 whitespace-nowrap text-slate-500 font-medium">{row.id}</td>
+                  <td className="px-4 py-4 whitespace-nowrap text-slate-700 font-bold">{row.packages}</td>
+                  <td className="px-4 py-4 whitespace-nowrap text-blue-600 font-semibold">{row.service}</td>
+                  <td className="px-4 py-4 whitespace-nowrap text-slate-600">{row.subService}</td>
+                  <td className="px-4 py-4 whitespace-nowrap text-emerald-600 font-bold">₹{row.fromAmount}</td>
+                  <td className="px-4 py-4 whitespace-nowrap text-emerald-600 font-bold">₹{row.toAmount}</td>
+                  <td className="px-4 py-4 whitespace-nowrap text-slate-700 font-medium">{row.charge}</td>
+                  <td className="px-4 py-4 whitespace-nowrap text-blue-600 font-bold">{row.commission}</td>
+                  <td className="px-4 py-4 whitespace-nowrap text-red-500 font-medium">{row.tds}</td>
+                  <td className="px-4 py-4 whitespace-nowrap text-slate-600">
+                    <span className="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-md text-xs font-bold">{row.chargeIn}</span>
+                  </td>
+                  <td className="px-4 py-4 whitespace-nowrap text-slate-600">
+                    <span className="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-md text-xs font-bold">{row.commissionIn}</span>
+                  </td>
+                  <td className="px-4 py-4 whitespace-nowrap text-slate-600">
+                    <span className="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-md text-xs font-bold">{row.tdsIn}</span>
+                  </td>
+                  <td className="px-4 py-4 whitespace-nowrap">
+                    <div className="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button className="p-2 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg transition-colors" title="Edit">
+                        <Edit2 className="w-4 h-4" />
                       </button>
-                      <button className="bg-[#FA5252] hover:bg-[#ef4444] text-white text-[10px] font-bold px-3 py-1 rounded w-16 transition-colors shadow-[0_2px_4px_rgba(250,82,82,0.4)]">
-                        Delete
+                      <button className="p-2 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-lg transition-colors" title="Delete">
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </td>
@@ -235,7 +193,6 @@ const CommissionPlans = () => {
             </tbody>
           </table>
         </div>
-
       </div>
     </div>
   );

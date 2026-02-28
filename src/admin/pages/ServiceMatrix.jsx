@@ -136,7 +136,6 @@ const ServiceMatrix = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Member</th>
                 <th className="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Role</th>
                 <th className="px-4 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">AEPS</th>
                 <th className="px-4 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">BBPS</th>
@@ -145,14 +144,12 @@ const ServiceMatrix = () => {
                 <th className="px-4 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Payout</th>
                 <th className="px-4 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">POS</th>
                 <th className="px-4 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Sound Box</th>
+                <th className="px-4 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Remark</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {downlines.filter(m => roleLevel[m.role] < currentUserLevel).map((member) => (
                 <tr key={member.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="font-semibold text-gray-900">{member.name}</div>
-                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                       ${member.role === 'MASTER_DISTRIBUTOR' ? 'bg-purple-100 text-purple-800' :
@@ -181,6 +178,11 @@ const ServiceMatrix = () => {
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-center text-sm">
                     {renderToggle(member.id, 'soundBox', member.soundBox, member.role)}
+                  </td>
+                  <td className="px-4 py-4 whitespace-nowrap text-center text-sm">
+                    <span className="text-gray-500 text-xs italic">
+                      {member.role === 'MASTER_DISTRIBUTOR' ? 'Requires Approval' : 'Auto Approved'}
+                    </span>
                   </td>
                 </tr>
               ))}

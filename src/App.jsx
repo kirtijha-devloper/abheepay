@@ -35,6 +35,16 @@ import AepsStatement from './admin/pages/AepsStatement';
 import DmtReport from './admin/pages/DmtReport';
 import BbpsHistory from './admin/pages/BbpsHistory';
 import Login from './admin/pages/Login';
+import ServicePage from './admin/pages/ServicePage';
+import SubServiceForm from './admin/pages/SubServiceForm';
+import Settings from './admin/pages/Settings';
+import CommissionPlanSettings from './admin/pages/CommissionPlanSettings';
+import ProfileSettings from './admin/pages/ProfileSettings';
+import TpinSettings from './admin/pages/TpinSettings';
+import ChangePassword from './admin/pages/ChangePassword';
+import CertificateDownload from './admin/pages/CertificateDownload';
+import DeviceDriver from './admin/pages/DeviceDriver';
+import SupportTicket from './admin/pages/SupportTicket';
 
 const WebsiteLayout = () => {
   return (
@@ -94,6 +104,16 @@ const router = createBrowserRouter([
       { path: "aeps-statement", element: <AepsStatement /> },
       { path: "dmt-report", element: <DmtReport /> },
       { path: "bbps-history", element: <BbpsHistory /> },
+      { path: "services/:serviceId", element: <ServicePage /> },
+      { path: "services/:serviceId/:subServiceId", element: <SubServiceForm /> },
+      { path: "settings", element: <Settings /> },
+      { path: "settings/commission-plan", element: <CommissionPlanSettings /> },
+      { path: "settings/profile", element: <ProfileSettings /> },
+      { path: "settings/tpin", element: <TpinSettings /> },
+      { path: "settings/change-password", element: <ChangePassword /> },
+      { path: "settings/certificate", element: <CertificateDownload /> },
+      { path: "settings/device-driver", element: <DeviceDriver /> },
+      { path: "support", element: <SupportTicket /> },
     ],
   },
 ]);

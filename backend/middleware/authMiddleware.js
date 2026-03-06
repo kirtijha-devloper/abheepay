@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+
+
+const prisma = require('../config/db');
 
 /**
  * Middleware to protect routes using JWT authentication.
@@ -17,10 +19,13 @@ const authMiddleware = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Invalid token format.' });
     }
 
-    // Replace process.env.JWT_SECRET with your secure secret key
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret_for_dev');
+    // Use the same secret as in authController.js
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'super-secret-key-change-in-production');
 
-    const user = await User.findById(decoded.userId).select('-password');
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId }
+    });
+
     if (!user) {
       return res.status(401).json({ success: false, message: 'User not found or deactivated.' });
     }

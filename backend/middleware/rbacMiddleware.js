@@ -1,4 +1,4 @@
-const User = require('../models/User');
+
 
 /**
  * Checks if the logged-in user is a parent (direct or indirect) of the target user.
@@ -24,9 +24,11 @@ const rbacMiddleware = {
    * if the target is in their direct downline.
    */
   requireDownlineAccess: async (req, res, next) => {
+    const prisma = require('../config/db');
+
     try {
-      const loggedInUserId = req.user._id.toString();
-      const targetUserId = req.params.targetId || req.body.targetId;
+      const loggedInUserId = req.user.id;
+      const targetUserId = req.params.id || req.params.targetId || req.body.targetId;
 
       if (!targetUserId) {
         return res.status(400).json({ success: false, message: 'Target user ID is missing' });
@@ -42,7 +44,10 @@ const rbacMiddleware = {
         return next();
       }
 
-      const targetUser = await User.findById(targetUserId);
+      const targetUser = await prisma.user.findUnique({
+        where: { id: targetUserId }
+      });
+
       if (!targetUser) {
         return res.status(404).json({ success: false, message: 'Target user not found' });
       }
@@ -54,12 +59,16 @@ const rbacMiddleware = {
       let currentDepth = 0;
 
       while (currentParentId && currentDepth < MaxDepth) {
-        if (currentParentId.toString() === loggedInUserId) {
+        if (currentParentId === loggedInUserId) {
           isAncestor = true;
           break;
         }
 
-        const parentUser = await User.findById(currentParentId).select('parentId');
+        const parentUser = await prisma.user.findUnique({
+          where: { id: currentParentId },
+          select: { parentId: true }
+        });
+
         if (!parentUser) break;
 
         currentParentId = parentUser.parentId;

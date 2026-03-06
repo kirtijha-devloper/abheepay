@@ -1,0 +1,138 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String
+  email         String    @unique
+  mobile        String    @unique
+  password      String
+  role          Role
+
+  shopName      String?
+  city          String?
+  state         String?
+  pincode       String?
+
+  aadharNo      String?
+  panNo         String?
+
+  bankName      String?
+  accountNo     String?
+  ifscCode      String?
+
+  // Hierarchical Self-Relation
+  parentId      String?
+  parent        User?     @relation("UserHierarchy", fields: [parentId], references: [id])
+  downlines     User[]    @relation("UserHierarchy")
+
+  walletBalance Float     @default(0.0)
+
+  kycStatus     KYCStatus @default(PENDING)
+  kycRequests   KYCRequest[]
+
+  fundRequests  FundRequest[]
+
+  transactions  Transaction[]
+
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Transaction {
+  id            String    @id @default(uuid())
+  amount        Float
+  type          TransactionType
+  status        TransactionStatus @default(PENDING)
+  service       String?   // AEPS, DMT, etc.
+  description   String?
+
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model KYCRequest {
+  id            String    @id @default(uuid())
+  aadharFront   String?   // URL or path
+  aadharBack    String?
+  panImage      String?
+  bankDoc       String?
+  status        KYCStatus @default(PENDING)
+  remark        String?
+
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model CommissionPlan {
+  id            String    @id @default(uuid())
+  name          String
+  role          Role
+  service       String
+  minAmount     Float
+  maxAmount     Float
+  commission    Float
+  isPercentage  Boolean   @default(false)
+  isActive      Boolean   @default(true)
+}
+
+enum Role {
+  ADMIN
+  SUPER_DISTRIBUTOR
+  MASTER_DISTRIBUTOR
+  DISTRIBUTOR
+  RETAILER
+}
+
+enum KYCStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum TransactionType {
+  CREDIT
+  DEBIT
+}
+
+enum TransactionStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+model FundRequest {
+  id             String            @id @default(uuid())
+  amount         Float
+  mode           String            // Bank Transfer, UPI, Cash, etc.
+  utr            String            @unique
+  companyAccount String?
+  proofImage     String?           // URL/Path to screenshot
+  remark         String?
+  status         FundRequestStatus @default(PENDING)
+  
+  userId         String
+  user           User              @relation(fields: [userId], references: [id])
+
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+}
+
+enum FundRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}

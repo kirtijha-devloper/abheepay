@@ -1,16 +1,49 @@
-# React + Vite
+# Abheepay - B2B FinTech Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Professional B2B FinTech solution for AEPS, DMT, BBPS, and other financial services with a hierarchical distribution model.
 
-Currently, two official plugins are available:
+## Project Structure
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The project is organized into a clean, modular architecture separating the Frontend and Backend concerns.
 
-## React Compiler
+### 📁 Root Directory
+- `/frontend`: React + Vite frontend application.
+- `/backend`: Express.js + Prisma backend API.
+- `README.md`: Project documentation.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 💻 Frontend (`/frontend`)
+- `src/admin`: Admin dashboard and management modules.
+- `src/website`: Customer-facing portal (if applicable).
+- `src/services`: Centralized API service layer (Axios/Fetch configurations).
+- `src/components`: Shared UI components across the app.
+- `src/constants`: Global constants and mock data for development.
+- `src/assets`: Global styles, images, and branding assets.
 
-## Expanding the ESLint configuration
+### ⚙️ Backend (`/backend`)
+- `app.js`: Express application setup and middleware configuration.
+- `server.js`: Server entry point and listener.
+- `config/`: Database (Prisma) and global configuration singletons.
+- `routes/`: Modular API routes (Auth, User, Wallet, KYC, Services).
+- `controllers/`: Business logic handlers for each route.
+- `middleware/`: Authentication and RBAC (Role-Based Access Control) logic.
+- `prisma/`: Database schema and migrations.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Getting Started
+
+### Backend Setup
+1. `cd backend`
+2. `npm install`
+3. Configure `.env` with your `DATABASE_URL` and `JWT_SECRET`.
+4. `npx prisma generate`
+5. `npm run dev`
+
+### Frontend Setup
+1. `cd frontend`
+2. `npm install`
+3. `npm run dev`
+
+## Architecture Highlights
+- **Hierarchical RBAC:** Multi-level access control (Admin > SD > MD > Dist > Retailer).
+- **Service Layer:** Abstracted API calls for better maintainability.
+- **Singleton Database:** Optimized Prisma Client instantiation.
+- **Atomic Design:** Component-based UI structure.

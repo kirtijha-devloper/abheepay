@@ -79,12 +79,18 @@ const Sidebar = () => {
               </button>
               {openMenus.user && (
                 <div className="pl-11 pr-2 py-2 space-y-1 mb-2">
-                  <NavLink to="/admin/add-member" className={subNavItemClass}>Add Member</NavLink>
                   <NavLink to="/admin/all-members" className={subNavItemClass}>All Members</NavLink>
                   <NavLink to="/admin/kyc-requested" className={subNavItemClass}>KYC Requested</NavLink>
                 </div>
               )}
             </div>
+          )}
+
+          {canManageUsers && (
+            <NavLink to="/admin/staff-management" className={navItemClass}>
+              <Briefcase className="w-5 h-5 mr-3" strokeWidth={1.5} />
+              <span>Staff Management</span>
+            </NavLink>
           )}
 
           {canManageUsers && (

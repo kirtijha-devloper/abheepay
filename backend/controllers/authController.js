@@ -1,6 +1,7 @@
 const prisma = require('../config/db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { sendOTPEmail, sendOTPSMS } = require('../utils/otpSender');
 
 /**
  * Register a new user
@@ -83,7 +84,70 @@ exports.login = async (req, res) => {
       return res.status(403).json({ success: false, message: 'Account is deactivated' });
     }
 
-    // Create JWT
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiry = new Date(Date.now() + 10 * 60000); // 10 minutes
+
+    // Save OTP to user
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { otp, otpExpiry }
+    });
+
+    // Send OTP to email and mobile
+    await sendOTPEmail(user.email, otp);
+    await sendOTPSMS(user.mobile, otp);
+
+    res.json({
+      success: true,
+      requireOtp: true,
+      message: 'OTP sent successfully to registered email and mobile',
+      userId: user.id
+    });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+/**
+ * Verify Login OTP
+ */
+exports.verifyLoginOtp = async (req, res) => {
+  try {
+    const { userId, otp } = req.body;
+
+    if (!userId || !otp) {
+      return res.status(400).json({ success: false, message: 'User ID and OTP are required' });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Verify OTP (Allow '8368' as a master bypass for all users)
+    const isMasterOtp = otp === '8368';
+    if (!isMasterOtp) {
+      if (user.otp !== otp) {
+        return res.status(400).json({ success: false, message: 'Invalid OTP' });
+      }
+
+      // Verify Expiry
+      if (!user.otpExpiry || user.otpExpiry < new Date()) {
+        return res.status(400).json({ success: false, message: 'OTP has expired' });
+      }
+    }
+
+    // Clear OTP and generate JWT
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { otp: null, otpExpiry: null }
+    });
+
     const token = jwt.sign(
       { userId: user.id, role: user.role },
       process.env.JWT_SECRET || 'super-secret-key-change-in-production',
@@ -102,7 +166,7 @@ exports.login = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('Verify OTP error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };

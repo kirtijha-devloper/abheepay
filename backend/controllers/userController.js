@@ -2,6 +2,33 @@ const prisma = require('../config/db');
 const bcrypt = require('bcryptjs');
 
 /**
+ * Helper function to iteratively fetch all descendant IDs for a given user.
+ */
+async function getDownlineIds(startUserId) {
+  let allChildIds = [];
+  let currentLevelIds = [startUserId];
+
+  // We loop until no more children are found
+  while (currentLevelIds.length > 0) {
+    // Fetch all users whose parentId is in our current level
+    const children = await prisma.user.findMany({
+      where: { parentId: { in: currentLevelIds } },
+      select: { id: true }
+    });
+
+    const childIds = children.map(c => c.id);
+
+    // Add them to our total pool
+    allChildIds = allChildIds.concat(childIds);
+
+    // Set the found children as the next level to search from
+    currentLevelIds = childIds;
+  }
+
+  return allChildIds;
+}
+
+/**
  * List all users in the downline of the logged-in user.
  * ADMIN sees everyone.
  * Others see only their direct and indirect downline.
@@ -35,10 +62,11 @@ exports.listUsers = async (req, res) => {
         }
       });
     } else {
-      // Fetch all descendants recursively (or just direct for simplicity if preferred)
-      // For now, let's fetch matching parentId
+      // Fetch all descendants recursively
+      const downlineIds = await getDownlineIds(loggedInUser.id);
+
       users = await prisma.user.findMany({
-        where: { parentId: loggedInUser.id },
+        where: { id: { in: downlineIds } },
         select: {
           id: true,
           name: true,
@@ -76,7 +104,14 @@ exports.getUserStats = async (req, res) => {
     const loggedInUser = req.user;
     let totalUsers, activeUsers, deactivatedUsers;
 
-    const baseQuery = loggedInUser.role === 'ADMIN' ? {} : { parentId: loggedInUser.id };
+    let baseQuery;
+
+    if (loggedInUser.role === 'ADMIN') {
+      baseQuery = { id: { not: loggedInUser.id } }; // Exclude the admin themselves
+    } else {
+      const downlineIds = await getDownlineIds(loggedInUser.id);
+      baseQuery = { id: { in: downlineIds } };
+    }
 
     totalUsers = await prisma.user.count({ where: baseQuery });
     activeUsers = await prisma.user.count({ where: { ...baseQuery, isActive: true } });
@@ -144,6 +179,20 @@ exports.addUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // Strict Parent Hierarchy Check
+    if (parentId) {
+      const parent = await prisma.user.findUnique({ where: { id: parentId } });
+      if (!parent) return res.status(400).json({ success: false, message: 'Invalid Parent ID' });
+
+      const rolesHierarchy = ['ADMIN', 'SUPER_DISTRIBUTOR', 'MASTER_DISTRIBUTOR', 'DISTRIBUTOR', 'RETAILER'];
+      const targetRoleIdx = rolesHierarchy.indexOf(role);
+      const parentRoleIdx = rolesHierarchy.indexOf(parent.role);
+
+      if (targetRoleIdx !== parentRoleIdx + 1) {
+        return res.status(400).json({ success: false, message: `A ${role} must be placed under a ${rolesHierarchy[targetRoleIdx - 1]}` });
+      }
+    }
+
     const newUser = await prisma.user.create({
       data: {
         role,
@@ -170,7 +219,123 @@ exports.addUser = async (req, res) => {
       data: { id: newUser.id, name: newUser.name, role: newUser.role }
     });
   } catch (error) {
-    console.error('Add user error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
+/**
+ * Get all staff members (ADMIN and EMPLOYEE roles)
+ * Only accessible by ADMIN
+ */
+exports.getStaff = async (req, res) => {
+  try {
+    const loggedInUser = req.user;
+
+    // Optional: Only allow ADMIN to view staff list
+    if (loggedInUser.role !== 'ADMIN') {
+      return res.status(403).json({ success: false, message: 'Unauthorized. Admins only.' });
+    }
+
+    const staff = await prisma.user.findMany({
+      where: {
+        role: { in: ['ADMIN', 'EMPLOYEE'] }
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        mobile: true,
+        role: true,
+        createdAt: true,
+      },
+      orderBy: {
+        createdAt: 'asc'
+      }
+    });
+
+    res.json({ success: true, data: staff });
+  } catch (error) {
+    console.error('Get staff error:', error);
+    res.status(500).json({ success: false, message: 'Server error fetching staff' });
+  }
+};
+
+/**
+ * Get potential parents for a specific role
+ */
+exports.getPotentialParents = async (req, res) => {
+  try {
+    const { role } = req.query;
+    const loggedInUser = req.user;
+    const rolesHierarchy = ['ADMIN', 'SUPER_DISTRIBUTOR', 'MASTER_DISTRIBUTOR', 'DISTRIBUTOR', 'RETAILER'];
+
+    const targetRoleIdx = rolesHierarchy.indexOf(role);
+    if (targetRoleIdx <= 0) {
+      return res.status(400).json({ success: false, message: 'Invalid role for parent selection' });
+    }
+
+    const parentRole = rolesHierarchy[targetRoleIdx - 1];
+    let query = { role: parentRole };
+
+    // If not admin, only show parents in their own network
+    if (loggedInUser.role !== 'ADMIN') {
+      const downlineIds = await getDownlineIds(loggedInUser.id);
+      query.id = { in: [...downlineIds, loggedInUser.id] };
+    }
+
+    const potentialParents = await prisma.user.findMany({
+      where: query,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        mobile: true
+      }
+    });
+
+    res.json({ success: true, data: potentialParents });
+  } catch (error) {
+    console.error('Get potential parents error:', error);
+    res.status(500).json({ success: false, message: 'Server error fetching parents' });
+  }
+};
+
+/**
+ * Update a user's profile and permissions (ADMIN only)
+ */
+exports.updateUser = async (req, res) => {
+  try {
+    const loggedInUser = req.user;
+    if (loggedInUser.role !== 'ADMIN') {
+      return res.status(403).json({ success: false, message: 'Unauthorized. Admins only.' });
+    }
+
+    const { id } = req.params;
+    const { name, email, mobile, role, password, permissions } = req.body;
+
+    const updateData = {};
+    if (name) updateData.name = name;
+    if (email) updateData.email = email;
+    if (mobile) updateData.mobile = mobile;
+    if (role) updateData.role = role;
+    if (permissions) updateData.permissions = permissions;
+
+    if (password && password.trim() !== '') {
+      const salt = await bcrypt.genSalt(10);
+      updateData.password = await bcrypt.hash(password, salt);
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: updateData,
+      select: { id: true, name: true, email: true, mobile: true, role: true, permissions: true }
+    });
+
+    res.json({ success: true, message: 'User updated successfully', data: updatedUser });
+  } catch (error) {
+    console.error('Update user error:', error);
+    res.status(500).json({ success: false, message: 'Failed to update user' });
+  }
+};
+

@@ -44,6 +44,13 @@ model User {
   isActive      Boolean   @default(true)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+
+  // Staff Permissions (JSON object, applicable for ADMIN/EMPLOYEE roles)
+  permissions   Json?
+
+  // OTP for Login Verification
+  otp           String?
+  otpExpiry     DateTime?
 }
 
 model Transaction {
@@ -91,6 +98,7 @@ model CommissionPlan {
 
 enum Role {
   ADMIN
+  EMPLOYEE
   SUPER_DISTRIBUTOR
   MASTER_DISTRIBUTOR
   DISTRIBUTOR

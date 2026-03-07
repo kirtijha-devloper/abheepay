@@ -24,6 +24,7 @@ import Dashboard from './admin/pages/Dashboard';
 import AddUser from './admin/pages/AddUser';
 import AllMembers from './admin/pages/AllMembers';
 import KycRequested from './admin/pages/KycRequested';
+import StaffManagement from './admin/pages/StaffManagement';
 import CommissionPlans from './admin/pages/CommissionPlans';
 import ServiceMatrix from './admin/pages/ServiceMatrix';
 import Ledger from './admin/pages/Ledger';
@@ -96,6 +97,7 @@ const router = createBrowserRouter([
       { path: "add-member", element: <AddUser /> },
       { path: "all-members", element: <AllMembers /> },
       { path: "kyc-requested", element: <KycRequested /> },
+      { path: "staff-management", element: <StaffManagement /> },
       { path: "commission-plans", element: <CommissionPlans /> },
       { path: "service-matrix", element: <ServiceMatrix /> },
       { path: "ledger", element: <Ledger /> },

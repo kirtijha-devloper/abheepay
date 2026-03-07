@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronRight, Loader2 } from 'lucide-react';
 import { apiRequest } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
@@ -9,6 +9,29 @@ const AddUser = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [selectedRole, setSelectedRole] = useState('');
+  const [parents, setParents] = useState([]);
+  const [loadingParents, setLoadingParents] = useState(false);
+
+  useEffect(() => {
+    if (selectedRole) {
+      const fetchParents = async () => {
+        try {
+          setLoadingParents(true);
+          const res = await apiRequest(`/users/potential-parents?role=${selectedRole}`);
+          setParents(res.data || []);
+        } catch (err) {
+          console.error(err);
+          setParents([]);
+        } finally {
+          setLoadingParents(false);
+        }
+      };
+      fetchParents();
+    } else {
+      setParents([]);
+    }
+  }, [selectedRole]);
 
   const getAvailableRoles = () => {
     switch (userRole) {
@@ -58,14 +81,20 @@ const AddUser = () => {
     }
 
     try {
-      // For KYC and user creation, we might use a single multipart request 
-      // or separate them. Here we'll try a single one as supported by our backend addUser
-      await apiRequest('/users/add', 'POST', formData, true);
-      setSuccess("User created successfully!");
+      // Convert FormData to JSON object, omitting file fields for now as the backend isn't using them
+      const data = Object.fromEntries(formData.entries());
+      delete data.confirmPassword;
+      delete data.aadharFront;
+      delete data.aadharBack;
+      delete data.panImage;
+      delete data.bankDoc;
+
+      await apiRequest('/users/add', 'POST', data);
+      setSuccess("User created successfully! Redirecting...");
       e.target.reset();
       setTimeout(() => navigate('/admin/all-members'), 2000);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Failed to create user");
     } finally {
       setLoading(false);
     }
@@ -93,13 +122,44 @@ const AddUser = () => {
           {/* Role */}
           <div className="space-y-1">
             <label className="block text-sm font-medium text-gray-700">Role</label>
-            <select name="role" required className="w-full border border-gray-300 rounded-md px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-gray-600 appearance-none bg-white">
+            <select
+              name="role"
+              required
+              value={selectedRole}
+              onChange={(e) => setSelectedRole(e.target.value)}
+              className="w-full border border-gray-300 rounded-md px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-gray-600 appearance-none bg-white"
+            >
               <option value="">Select Role</option>
               {availableRoles.map(role => (
                 <option key={role.value} value={role.value}>{role.label}</option>
               ))}
             </select>
           </div>
+
+          {/* Upline / Parent Selector */}
+          {selectedRole && (
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700">
+                Select {
+                  selectedRole === 'SUPER_DISTRIBUTOR' ? 'Admin' :
+                    selectedRole === 'MASTER_DISTRIBUTOR' ? 'Super Distributor' :
+                      selectedRole === 'DISTRIBUTOR' ? 'Master Distributor' :
+                        'Distributor'
+                } (Upline)
+              </label>
+              <select
+                name="parentId"
+                required
+                disabled={loadingParents}
+                className="w-full border border-gray-300 rounded-md px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-gray-600 appearance-none bg-white disabled:bg-gray-50"
+              >
+                <option value="">{loadingParents ? 'Loading potential parents...' : 'Select Parent User'}</option>
+                {parents.map(p => (
+                  <option key={p.id} value={p.id}>{p.name} - {p.role} ({p.mobile})</option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* Name */}
           <div className="space-y-1">

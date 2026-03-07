@@ -25,6 +25,8 @@ const AllMembers = () => {
   const [users, setUsers] = useState([]);
   const [stats, setStats] = useState({ totalUsers: 0, activeUsers: 0, roles: {} });
   const [loading, setLoading] = useState(true);
+  const [selectedRole, setSelectedRole] = useState("All Roles");
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -58,6 +60,18 @@ const AllMembers = () => {
       alert("Impersonation failed: " + error.message);
     }
   };
+
+  const filteredUsers = users.filter(user => {
+    const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.mobile.includes(searchQuery);
+
+    const matchesRole = selectedRole === "All Roles" ||
+      user.role === selectedRole.toUpperCase().replace(' ', '_');
+
+    return matchesSearch && matchesRole;
+  });
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
 
@@ -82,7 +96,9 @@ const AllMembers = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
 
         {/* Total Users */}
-        <div className="bg-white rounded-lg p-5 shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+        <div
+          onClick={() => setSelectedRole("All Roles")}
+          className={`bg-white rounded-lg p-5 shadow-sm border flex flex-col items-center justify-center text-center cursor-pointer transition-all hover:shadow-md hover:border-indigo-200 ${selectedRole === "All Roles" ? "ring-2 ring-indigo-500 bg-indigo-50/10" : "border-gray-100"}`}>
           <div className="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center mb-2 text-indigo-500">
             <Users className="w-5 h-5" />
           </div>
@@ -91,7 +107,9 @@ const AllMembers = () => {
         </div>
 
         {/* Super Distributors */}
-        <div className="bg-white rounded-lg p-5 shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+        <div
+          onClick={() => setSelectedRole("Super Distributor")}
+          className={`bg-white rounded-lg p-5 shadow-sm border flex flex-col items-center justify-center text-center cursor-pointer transition-all hover:shadow-md hover:border-purple-200 ${selectedRole === "Super Distributor" ? "ring-2 ring-purple-500 bg-purple-50/10" : "border-gray-100"}`}>
           <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center mb-2 text-purple-500">
             <ShieldUser className="w-5 h-5" />
           </div>
@@ -100,7 +118,9 @@ const AllMembers = () => {
         </div>
 
         {/* Master Distributors */}
-        <div className="bg-white rounded-lg p-5 shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+        <div
+          onClick={() => setSelectedRole("Master Distributor")}
+          className={`bg-white rounded-lg p-5 shadow-sm border flex flex-col items-center justify-center text-center cursor-pointer transition-all hover:shadow-md hover:border-pink-200 ${selectedRole === "Master Distributor" ? "ring-2 ring-pink-500 bg-pink-50/10" : "border-gray-100"}`}>
           <div className="w-10 h-10 rounded-full bg-pink-50 flex items-center justify-center mb-2 text-pink-500">
             <UserPlus className="w-5 h-5" />
           </div>
@@ -109,7 +129,9 @@ const AllMembers = () => {
         </div>
 
         {/* Distributors */}
-        <div className="bg-white rounded-lg p-5 shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+        <div
+          onClick={() => setSelectedRole("Distributor")}
+          className={`bg-white rounded-lg p-5 shadow-sm border flex flex-col items-center justify-center text-center cursor-pointer transition-all hover:shadow-md hover:border-blue-200 ${selectedRole === "Distributor" ? "ring-2 ring-blue-500 bg-blue-50/10" : "border-gray-100"}`}>
           <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mb-2 text-blue-500">
             <Users className="w-5 h-5" />
           </div>
@@ -118,7 +140,9 @@ const AllMembers = () => {
         </div>
 
         {/* Retailers */}
-        <div className="bg-white rounded-lg p-5 shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+        <div
+          onClick={() => setSelectedRole("Retailer")}
+          className={`bg-white rounded-lg p-5 shadow-sm border flex flex-col items-center justify-center text-center cursor-pointer transition-all hover:shadow-md hover:border-green-200 ${selectedRole === "Retailer" ? "ring-2 ring-green-500 bg-green-50/10" : "border-gray-100"}`}>
           <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center mb-2 text-green-500">
             <Users className="w-5 h-5" />
           </div>
@@ -136,7 +160,9 @@ const AllMembers = () => {
           <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Search</label>
           <input
             type="text"
-            placeholder="Name, phone, or username..."
+            placeholder="Name, phone, or email..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500"
           />
         </div>
@@ -144,22 +170,28 @@ const AllMembers = () => {
         {/* Role Select */}
         <div className="w-full lg:w-48">
           <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Filter by Role</label>
-          <select className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 text-gray-600 bg-white">
-            <option>All Roles</option>
-            <option>Super Distributor</option>
-            <option>Master Distributor</option>
-            <option>Distributor</option>
-            <option>Retailer</option>
+          <select
+            value={selectedRole}
+            onChange={(e) => setSelectedRole(e.target.value)}
+            className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 text-gray-600 bg-white"
+          >
+            <option value="All Roles">All Roles</option>
+            <option value="Super Distributor">Super Distributor</option>
+            <option value="Master Distributor">Master Distributor</option>
+            <option value="Distributor">Distributor</option>
+            <option value="Retailer">Retailer</option>
           </select>
         </div>
 
         {/* Buttons */}
         <div className="flex items-end gap-2 shrink-0">
-          <button className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded-md font-medium flex items-center text-sm transition-colors">
-            <Search className="w-4 h-4 mr-2" />
-            Search
-          </button>
-          <button className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 px-4 py-2 rounded-md font-medium flex items-center text-sm transition-colors">
+          <button
+            onClick={() => {
+              setSearchQuery("");
+              setSelectedRole("All Roles");
+            }}
+            className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 px-4 py-2 rounded-md font-medium flex items-center text-sm transition-colors"
+          >
             <X className="w-4 h-4 mr-2" />
             Clear
           </button>
@@ -173,9 +205,9 @@ const AllMembers = () => {
         <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
           <h2 className="text-lg font-bold text-gray-800 flex items-center">
             <List className="w-5 h-5 mr-2 text-gray-500" />
-            User List
+            {selectedRole === "All Roles" ? "All Users" : `${selectedRole}s`}
           </h2>
-          <span className="bg-indigo-500 text-white text-xs font-bold px-3 py-1 rounded-md">583 USERS</span>
+          <span className="bg-indigo-500 text-white text-xs font-bold px-3 py-1 rounded-md">{filteredUsers.length} USERS</span>
         </div>
 
         {/* Table */}
@@ -193,7 +225,7 @@ const AllMembers = () => {
               </tr>
             </thead>
             <tbody>
-              {users.map((user, index) => (
+              {filteredUsers.map((user, index) => (
                 <tr key={user.id} className="bg-white border-b border-gray-100 hover:bg-gray-50 transition-colors">
 
                   {/* ID */}
@@ -236,7 +268,7 @@ const AllMembers = () => {
 
                   {/* Balance */}
                   <td className="px-6 py-5 text-center font-bold text-gray-800">
-                    ₹{user.walletBalance.toLocaleString()}
+                    ₹{user.walletBalance?.toLocaleString() || '0'}
                   </td>
 
                   {/* KYC Status */}
@@ -269,9 +301,9 @@ const AllMembers = () => {
                   </td>
                 </tr>
               ))}
-              {users.length === 0 && !loading && (
+              {filteredUsers.length === 0 && !loading && (
                 <tr>
-                  <td colSpan="8" className="px-6 py-10 text-center text-gray-500">No members found in your downline.</td>
+                  <td colSpan="8" className="px-6 py-10 text-center text-gray-500">No members found matching your criteria.</td>
                 </tr>
               )}
             </tbody>

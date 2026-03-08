@@ -40,6 +40,7 @@ import ServicePage from './admin/pages/ServicePage';
 import SubServiceForm from './admin/pages/SubServiceForm';
 import ImpersonateSession from './admin/pages/ImpersonateSession';
 import Settings from './admin/pages/Settings';
+import BankAccount from './admin/pages/BankAccount';
 import CommissionPlanSettings from './admin/pages/CommissionPlanSettings';
 import ProfileSettings from './admin/pages/ProfileSettings';
 import TpinSettings from './admin/pages/TpinSettings';
@@ -48,6 +49,7 @@ import CertificateDownload from './admin/pages/CertificateDownload';
 import DeviceDriver from './admin/pages/DeviceDriver';
 import SupportTicket from './admin/pages/SupportTicket';
 import FundRequests from './admin/pages/FundRequests';
+import AddFundPG from './admin/pages/AddFundPG';
 
 const WebsiteLayout = () => {
   return (
@@ -104,7 +106,8 @@ const router = createBrowserRouter([
       { path: "credit-card-apply-request", element: <CreditCardApplyRequest /> },
       { path: "pan-card-history", element: <PanCardHistory /> },
       { path: "payout-history", element: <PayoutHistory /> },
-      { path: "pg-add-fund", element: <PgAddFund /> },
+      { path: "pg-add-fund", element: <PgAddFund /> }, // Admin Report
+      { path: "add-fund-pg", element: <AddFundPG /> }, // User Add Fund Action
       { path: "aeps-statement", element: <AepsStatement /> },
       { path: "dmt-report", element: <DmtReport /> },
       { path: "bbps-history", element: <BbpsHistory /> },
@@ -112,6 +115,7 @@ const router = createBrowserRouter([
       { path: "services/:serviceId/:subServiceId", element: <SubServiceForm /> },
       { path: "impersonate-session", element: <ImpersonateSession /> },
       { path: "settings", element: <Settings /> },
+      { path: "bank-account", element: <BankAccount /> },
       { path: "settings/commission-plan", element: <CommissionPlanSettings /> },
       { path: "settings/profile", element: <ProfileSettings /> },
       { path: "settings/tpin", element: <TpinSettings /> },
@@ -120,6 +124,7 @@ const router = createBrowserRouter([
       { path: "settings/device-driver", element: <DeviceDriver /> },
       { path: "support", element: <SupportTicket /> },
       { path: "fund-requests", element: <FundRequests /> },
+      { path: "fund-requests-history", element: <FundRequests /> },
     ],
   },
 ]);

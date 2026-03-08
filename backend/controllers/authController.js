@@ -162,7 +162,8 @@ exports.verifyLoginOtp = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        walletBalance: user.walletBalance
+        walletBalance: user.walletBalance,
+        eWalletBalance: user.eWalletBalance
       }
     });
   } catch (error) {

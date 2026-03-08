@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { apiRequest } from '../../services/api';
 import {
   ArrowLeft,
   Wallet,
@@ -67,7 +68,7 @@ const servicesDataMap = {
       { id: 'electricity', title: 'Electricity', icon: <Zap className="w-6 h-6 text-amber-500" /> },
       { id: 'lpg-gas', title: 'LPG Gas Cylinder', icon: <Database className="w-6 h-6 text-orange-600" /> },
       { id: 'cc-bill', title: 'Credit Card Bill', icon: <CreditCard className="w-6 h-6 text-slate-600" /> },
-      { id: 'mobile-postpaid', title: 'Mobile Postpaid', icon: <Smartphone className="w-6 h-6 text-indigo-500" /> },
+      { id: 'mobile-postpaid', title: 'Mobile Postpaid', icon: <Smartphone className="w-6 h-6 text-cyan-500" /> },
       { id: 'lic-insurance', title: 'LIC/Insurance', icon: <Shield className="w-6 h-6 text-blue-600" /> },
       { id: 'broadband', title: 'Broadband', icon: <Wifi className="w-6 h-6 text-teal-500" /> },
       { id: 'piped-gas', title: 'Piped Gas', icon: <Flame className="w-6 h-6 text-orange-500" /> },
@@ -76,7 +77,7 @@ const servicesDataMap = {
       { id: 'landline', title: 'Landline', icon: <PhoneCall className="w-6 h-6 text-slate-500" /> },
       { id: 'cable-tv', title: 'Cable TV', icon: <MonitorPlay className="w-6 h-6 text-purple-500" /> },
       { id: 'municipal-tax', title: 'Municipal Tax', icon: <Building className="w-6 h-6 text-slate-600" /> },
-      { id: 'education', title: 'Education Fees', icon: <GraduationCap className="w-6 h-6 text-indigo-600" /> },
+      { id: 'education', title: 'Education Fees', icon: <GraduationCap className="w-6 h-6 text-cyan-600" /> },
       { id: 'municipal-services', title: 'Municipal Services', icon: <Truck className="w-6 h-6 text-emerald-500" /> },
       { id: 'rental', title: 'Rental', icon: <Home className="w-6 h-6 text-orange-500" /> },
       { id: 'housing-society', title: 'Housing Society', icon: <Building2 className="w-6 h-6 text-blue-500" /> },
@@ -91,7 +92,7 @@ const servicesDataMap = {
     color: 'indigo',
     icon: <ArrowRightLeft className="w-8 h-8 text-white" />,
     subServices: [
-      { id: 'as', title: 'Add Beneficiary', icon: <UserCheck className="w-6 h-6 text-indigo-600" /> },
+      { id: 'as', title: 'Add Beneficiary', icon: <UserCheck className="w-6 h-6 text-cyan-600" /> },
       { id: 'sl', title: 'Sender Login', icon: <Search className="w-6 h-6 text-emerald-600" /> },
       { id: 'bl', title: 'Beneficiary List', icon: <FileText className="w-6 h-6 text-purple-600" /> },
       { id: 'sm', title: 'Send Money', icon: <Send className="w-6 h-6 text-amber-600" /> },
@@ -132,7 +133,7 @@ const servicesDataMap = {
     icon: <CreditCard className="w-8 h-8 text-white" />,
     subServices: [
       { id: 'apply-sbi', title: 'SBI Card', icon: <CreditCard className="w-6 h-6 text-blue-500" /> },
-      { id: 'apply-hdfc', title: 'HDFC Card', icon: <CreditCard className="w-6 h-6 text-indigo-600" /> },
+      { id: 'apply-hdfc', title: 'HDFC Card', icon: <CreditCard className="w-6 h-6 text-cyan-600" /> },
       { id: 'apply-axis', title: 'Axis Bank Card', icon: <CreditCard className="w-6 h-6 text-red-600" /> },
     ]
   },
@@ -174,7 +175,7 @@ const servicesDataMap = {
     icon: <Building2 className="w-8 h-8 text-white" />,
     subServices: [
       { id: 'savings', title: 'Savings Account', icon: <Landmark className="w-6 h-6 text-blue-600" /> },
-      { id: 'current', title: 'Current Account', icon: <Briefcase className="w-6 h-6 text-indigo-600" /> },
+      { id: 'current', title: 'Current Account', icon: <Briefcase className="w-6 h-6 text-cyan-600" /> },
     ]
   },
   'pan-apply': {
@@ -183,7 +184,7 @@ const servicesDataMap = {
     color: 'indigo',
     icon: <ShieldCheck className="w-8 h-8 text-white" />,
     subServices: [
-      { id: 'nsdl-pan', title: 'NSDL PAN', icon: <FileText className="w-6 h-6 text-indigo-600" /> },
+      { id: 'nsdl-pan', title: 'NSDL PAN', icon: <FileText className="w-6 h-6 text-cyan-600" /> },
       { id: 'uti-pan', title: 'UTI PAN', icon: <FileText className="w-6 h-6 text-blue-600" /> },
       { id: 'pan-track', title: 'Track Status', icon: <Search className="w-6 h-6 text-emerald-600" /> },
     ]
@@ -195,7 +196,7 @@ const servicesDataMap = {
     icon: <Wallet className="w-8 h-8 text-white" />,
     subServices: [
       { id: 'wallet-load', title: 'Load Wallet', icon: <ArrowRightLeft className="w-6 h-6 text-purple-600" /> },
-      { id: 'wallet-trf', title: 'Wallet Transfer', icon: <Send className="w-6 h-6 text-indigo-600" /> },
+      { id: 'wallet-trf', title: 'Wallet Transfer', icon: <Send className="w-6 h-6 text-cyan-600" /> },
     ]
   },
   'travel-booking': {
@@ -239,12 +240,36 @@ const servicesDataMap = {
 const ServicePage = () => {
   const { serviceId } = useParams();
   const serviceData = servicesDataMap[serviceId] || servicesDataMap['default'];
+  const [serviceEnabled, setServiceEnabled] = useState(true);
+  const [checkingAccess, setCheckingAccess] = useState(true);
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      try {
+        const userDataRaw = localStorage.getItem('userData');
+        const userId = userDataRaw ? JSON.parse(userDataRaw)?.id : null;
+        if (!userId) { setServiceEnabled(true); setCheckingAccess(false); return; }
+        const res = await apiRequest(`/users/${userId}/service-access`);
+        const access = res.data?.serviceAccess;
+        if (access && access[serviceId] !== undefined) {
+          setServiceEnabled(access[serviceId]);
+        } else {
+          setServiceEnabled(true); // default: enabled
+        }
+      } catch {
+        setServiceEnabled(true);
+      } finally {
+        setCheckingAccess(false);
+      }
+    };
+    checkAccess();
+  }, [serviceId]);
 
   // Custom theme colors based on the service
   const themeColors = {
     emerald: 'bg-emerald-500',
     blue: 'bg-blue-500',
-    indigo: 'bg-indigo-500',
+    indigo: 'bg-cyan-500',
     amber: 'bg-amber-500',
     purple: 'bg-purple-500',
     red: 'bg-red-500',
@@ -255,6 +280,85 @@ const ServicePage = () => {
   };
 
   const bgClass = themeColors[serviceData.color] || 'bg-slate-500';
+
+  if (checkingAccess) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="w-8 h-8 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!serviceEnabled) {
+    return (
+      <div className="space-y-8 max-w-7xl mx-auto">
+        {/* Header - still shown */}
+        <div className={`rounded-3xl p-8 shadow-md relative overflow-hidden ${bgClass}`}>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20" />
+          <div className="absolute bottom-0 left-0 w-40 h-40 bg-white/10 rounded-full blur-2xl -ml-10 -mb-10" />
+          <div className="relative z-10 flex flex-col gap-2 text-white">
+            <Link to="/admin" className="flex items-center text-white/80 hover:text-white mb-2 text-sm font-medium transition-colors w-fit">
+              <ArrowLeft className="w-4 h-4 mr-1" /> Back to Dashboard
+            </Link>
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm border border-white/20 shadow-inner">
+                {serviceData.icon}
+              </div>
+              <div>
+                <h1 className="text-3xl font-extrabold tracking-tight">{serviceData.title}</h1>
+                <p className="text-white/80 font-medium mt-1">{serviceData.description}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Coming Soon Banner */}
+        <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-slate-900 via-cyan-950 to-slate-900 min-h-[340px] flex items-center justify-center shadow-2xl border border-white/10">
+          {/* Decorative blobs */}
+          <div className="absolute top-0 left-0 w-72 h-72 bg-cyan-500/20 rounded-full blur-3xl -ml-20 -mt-20 pointer-events-none" />
+          <div className="absolute bottom-0 right-0 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl -mr-20 -mb-20 pointer-events-none" />
+          <div className="absolute inset-0 pointer-events-none"
+            style={{
+              backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(99,102,241,0.07) 0%, transparent 60%), radial-gradient(circle at 80% 50%, rgba(168,85,247,0.07) 0%, transparent 60%)'
+            }}
+          />
+
+          <div className="relative z-10 text-center px-8 py-14">
+            {/* Animated icon */}
+            <div className="flex justify-center mb-6">
+              <div className="w-20 h-20 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center backdrop-blur-sm shadow-xl">
+                {serviceData.icon}
+              </div>
+            </div>
+
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 bg-cyan-500/20 border border-cyan-400/30 rounded-full px-4 py-1.5 mb-5">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+              </span>
+              <span className="text-cyan-300 text-xs font-bold uppercase tracking-widest">Service Unavailable</span>
+            </div>
+
+            <h2 className="text-5xl md:text-6xl font-black text-white mb-6 relative">
+              Coming <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-400">Soon</span>
+            </h2>
+            <p className="text-slate-400 text-lg md:text-xl font-medium max-w-lg mx-auto leading-relaxed mb-10">
+              Your requested <span className="text-white font-bold">{serviceData?.title || serviceId}</span> service is currently inactive on your account.
+              Please contact your administrator to activate this feature.
+            </p>
+
+            {/* Decorative dots */}
+            <div className="flex justify-center gap-4">
+              <div className="w-2 h-2 bg-cyan-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+              <div className="w-2 h-2 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+              <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500 max-w-7xl mx-auto">

@@ -17,12 +17,15 @@ exports.raiseFundRequest = async (req, res) => {
       return res.status(400).json({ success: false, message: 'UTR already exists' });
     }
 
+    const proofImage = req.file ? `/uploads/proofs/${req.file.filename}` : null;
+
     const fundRequest = await prisma.fundRequest.create({
       data: {
         amount: parseFloat(amount),
         mode,
         utr,
         companyAccount,
+        proofImage,
         remark,
         userId,
         status: 'PENDING'
@@ -45,7 +48,11 @@ exports.getFundRequests = async (req, res) => {
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
     const where = {};
-    if (status) where.status = status;
+    if (status === 'PROCESSED') {
+      where.status = { in: ['APPROVED', 'REJECTED'] };
+    } else if (status) {
+      where.status = status;
+    }
 
     // Date range filter
     if (fromDate || toDate) {
@@ -143,8 +150,8 @@ exports.updateFundRequestStatus = async (req, res) => {
 
     // Start transaction to update status and wallet balance if approved
     const result = await prisma.$transaction(async (tx) => {
-      // 1. If approved and superior is not Admin, check and deduct superior's balance
-      if (status === 'APPROVED' && req.user.role !== 'ADMIN') {
+      // 1. If approved, check and deduct superior's balance (including Admin)
+      if (status === 'APPROVED') {
         const superior = await tx.user.findUnique({ where: { id: req.user.id } });
         if (superior.walletBalance < request.amount) {
           throw new Error('Insufficient balance in your wallet to approve this request');

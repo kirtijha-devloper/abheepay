@@ -11,7 +11,8 @@ import {
   Briefcase,
   PieChart,
   Shield,
-  LayoutGrid
+  LayoutGrid,
+  Wallet
 } from 'lucide-react';
 
 import storage from '../../utils/storage';
@@ -93,7 +94,7 @@ const Sidebar = () => {
             </NavLink>
           )}
 
-          {canManageUsers && (
+          {userRole !== 'RETAILER' && (
             <NavLink to="/admin/service-matrix" className={navItemClass}>
               <Shield className="w-5 h-5 mr-3" strokeWidth={1.5} />
               <span>Service Activation</span>
@@ -104,6 +105,13 @@ const Sidebar = () => {
             <CreditCard className="w-5 h-5 mr-3" strokeWidth={1.5} />
             <span>Fund Requests</span>
           </NavLink>
+
+          {userRole !== 'ADMIN' && (
+            <NavLink to="/admin/add-fund-pg" className={navItemClass}>
+              <Wallet className="w-5 h-5 mr-3" strokeWidth={1.5} />
+              <span>Add Fund PG</span>
+            </NavLink>
+          )}
 
           {userRole !== 'RETAILER' && (
             <NavLink to="/admin/commission-plans" className={navItemClass}>
@@ -160,12 +168,12 @@ const Sidebar = () => {
               <div className="pl-11 pr-2 py-2 space-y-1 mb-2">
                 <NavLink to="/admin/ledger" className={subNavItemClass}>Ledger Statement</NavLink>
                 <NavLink to="/admin/pg-add-fund" className={subNavItemClass}>PG Add Fund</NavLink>
-                <NavLink to="/admin/payout-history" className={subNavItemClass}>PayOut History</NavLink>
+                <NavLink to="/admin/payout-history" className={subNavItemClass}>PayOut Report</NavLink>
                 <NavLink to="/admin/aeps-statement" className={subNavItemClass}>AEPS Statement</NavLink>
                 <NavLink to="/admin/dmt-report" className={subNavItemClass}>DMT Report</NavLink>
-                <NavLink to="/admin/bbps-history" className={subNavItemClass}>BBPS History</NavLink>
-                <NavLink to="/admin/fund-requests-history" className={subNavItemClass}>Fund Requests History</NavLink>
-                <NavLink to="/admin/pan-card-history" className={subNavItemClass}>Pan Card History</NavLink>
+                <NavLink to="/admin/bbps-history" className={subNavItemClass}>BBPS Report</NavLink>
+                <NavLink to="/admin/fund-requests" className={subNavItemClass}>Fund Requests Report</NavLink>
+                <NavLink to="/admin/pan-card-history" className={subNavItemClass}>Pan Card Report</NavLink>
                 <NavLink to="/admin/credit-card-apply-request" className={subNavItemClass}>Credit Card Request</NavLink>
               </div>
             )}
@@ -186,6 +194,9 @@ const Sidebar = () => {
             </button>
             {openMenus.settings && (
               <div className="pl-11 pr-2 py-2 space-y-1 mb-2">
+                <NavLink to="/admin/bank-account" className={subNavItemClass}>
+                  <div className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-slate-400"></div> Bank Account</div>
+                </NavLink>
                 <NavLink to="/admin/settings/commission-plan" className={subNavItemClass}>
                   <div className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-slate-400"></div> Commission Plan</div>
                 </NavLink>

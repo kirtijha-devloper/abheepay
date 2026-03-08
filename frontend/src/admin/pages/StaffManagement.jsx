@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { apiRequest } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Eye, Edit, ShieldCheck, Trash2, X, Save, Loader2 } from 'lucide-react';
+import { Plus, Eye, ShieldCheck, Trash2, X, Save, Loader2 } from 'lucide-react';
 
 const ALL_PERMISSIONS = [
   { key: 'addUser', label: 'Add User' },
@@ -190,7 +190,7 @@ const StaffManagement = () => {
                     <td className="px-6 py-4 text-gray-500">{user.mobile}</td>
                     <td className="px-6 py-4">
                       {user.role === 'ADMIN' ? (
-                        <span className="bg-indigo-500/90 text-white text-[10px] font-bold px-2 py-1 rounded">ADMIN</span>
+                        <span className="bg-teal-500 text-white text-[10px] font-bold px-2 py-1 rounded">ADMIN</span>
                       ) : (
                         <span className="bg-cyan-500 text-white text-[10px] font-bold px-2 py-1 rounded">EMPLOYEE</span>
                       )}
@@ -213,18 +213,10 @@ const StaffManagement = () => {
                         </button>
 
                         {/* Edit Button */}
-                        <button
-                          onClick={() => openEditModal(user)}
-                          className="w-8 h-8 rounded bg-amber-500 hover:bg-amber-600 text-white flex items-center justify-center transition-colors"
-                          title="Edit Staff"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-
                         {/* Permissions Button */}
                         <button
                           onClick={() => openEditModal(user)}
-                          className="h-8 px-2.5 rounded bg-indigo-500/90 hover:bg-indigo-600 text-white flex flex-col items-center justify-center transition-colors leading-[0.5]"
+                          className="h-8 px-2.5 rounded bg-teal-500/90 hover:bg-teal-600 text-white flex flex-col items-center justify-center transition-colors leading-[0.5]"
                           title="Manage Permissions"
                         >
                           <ShieldCheck className="w-3.5 h-3.5 mb-1" />
@@ -408,8 +400,8 @@ const StaffManagement = () => {
                           <div
                             onClick={() => togglePermission(perm.key)}
                             className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors cursor-pointer ${editPermissions[perm.key]
-                                ? 'bg-blue-500 border-blue-500'
-                                : 'bg-white border-gray-300 group-hover:border-blue-400'
+                              ? 'bg-blue-500 border-blue-500'
+                              : 'bg-white border-gray-300 group-hover:border-blue-400'
                               }`}
                           >
                             {editPermissions[perm.key] && (

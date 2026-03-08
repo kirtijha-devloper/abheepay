@@ -142,7 +142,7 @@ const formConfigs = {
   },
   'nsdl-pan': {
     title: 'NSDL PAN Apply',
-    icon: <ShieldCheck className="w-6 h-6 text-indigo-600" />,
+    icon: <ShieldCheck className="w-6 h-6 text-cyan-600" />,
     fields: [
       { id: 'type', label: 'Application Type', type: 'select', options: ['New PAN - Indian Citizen (Form 49A)', 'Changes/Correction in PAN'] },
       { id: 'category', label: 'Category', type: 'select', options: ['Individual', 'Company', 'Firm', 'HUF'] },
@@ -151,7 +151,7 @@ const formConfigs = {
   },
   'hotel': {
     title: 'Hotel Booking',
-    icon: <Building className="w-6 h-6 text-purple-600" />,
+    icon: <Building className="w-6 h-6 text-teal-600" />,
     fields: [
       { id: 'destination', label: 'City or Hotel Name', type: 'text', placeholder: 'Enter destination or property' },
       { id: 'checkin', label: 'Check-in Date', type: 'date' },
@@ -287,7 +287,7 @@ const SubServiceForm = () => {
             </button>
             <Link
               to={`/admin/services/${serviceId}`}
-              className="flex-1 px-6 py-3 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition-colors text-center"
+              className="flex-1 px-6 py-3 rounded-xl bg-cyan-600 text-white font-semibold hover:bg-cyan-700 transition-colors text-center"
             >
               Back to Services
             </Link>
@@ -303,7 +303,7 @@ const SubServiceForm = () => {
       <div className="flex flex-col gap-4">
         <Link
           to={`/admin/services/${serviceId}`}
-          className="flex items-center text-slate-500 hover:text-indigo-600 text-sm font-medium transition-colors w-fit bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-100"
+          className="flex items-center text-slate-500 hover:text-cyan-600 text-sm font-medium transition-colors w-fit bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-100"
         >
           <ArrowLeft className="w-4 h-4 mr-2" /> Back to {serviceId.toUpperCase()} Services
         </Link>
@@ -342,7 +342,7 @@ const SubServiceForm = () => {
                       required={!field.optional}
                       value={formData[field.id] || ''}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 appearance-none transition-all"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 appearance-none transition-all"
                     >
                       <option value="" disabled>Select {field.label}</option>
                       {field.options.map((opt) => (
@@ -362,7 +362,7 @@ const SubServiceForm = () => {
                     required={!field.optional}
                     value={formData[field.id] || ''}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 font-medium placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 font-medium placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all"
                   />
                 )}
               </div>
@@ -379,7 +379,7 @@ const SubServiceForm = () => {
             <button
               type="submit"
               disabled={isProcessing}
-              className={`px-8 py-3 rounded-xl font-semibold text-white shadow-sm transition-all ${isProcessing ? 'bg-indigo-400 cursor-wait' : 'bg-indigo-600 hover:bg-indigo-700 hover:shadow-md active:scale-[0.98]'}`}
+              className={`px-8 py-3 rounded-xl font-semibold text-white shadow-sm transition-all ${isProcessing ? 'bg-cyan-400 cursor-wait' : 'bg-cyan-600 hover:bg-cyan-700 hover:shadow-md active:scale-[0.98]'}`}
             >
               {isProcessing ? (
                 <span className="flex items-center gap-2">

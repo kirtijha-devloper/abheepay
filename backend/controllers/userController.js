@@ -339,3 +339,66 @@ exports.updateUser = async (req, res) => {
   }
 };
 
+/**
+ * Get service access settings for a specific user
+ */
+exports.getUserServiceAccess = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await prisma.user.findUnique({
+      where: { id },
+      select: { id: true, name: true, serviceAccess: true }
+    });
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    res.json({ success: true, data: user });
+  } catch (error) {
+    console.error('Get service access error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+/**
+ * Update service access settings for a specific user
+ */
+exports.updateUserServiceAccess = async (req, res) => {
+  try {
+    const loggedInUser = req.user;
+    if (loggedInUser.role !== 'ADMIN') {
+      return res.status(403).json({ success: false, message: 'Unauthorized. Admins only.' });
+    }
+    const { id } = req.params;
+    const { serviceAccess } = req.body;
+
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: { serviceAccess },
+      select: { id: true, name: true, serviceAccess: true }
+    });
+    res.json({ success: true, message: 'Service access updated.', data: updatedUser });
+  } catch (error) {
+    console.error('Update user service access error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+/**
+ * Get User Balance
+ */
+exports.getUserBalance = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await prisma.user.findUnique({
+      where: { id },
+      select: { walletBalance: true, eWalletBalance: true }
+    });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    res.json({ success: true, ...user });
+  } catch (error) {
+    console.error('Get balance error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};

@@ -32,7 +32,8 @@ model User {
   parent        User?     @relation("UserHierarchy", fields: [parentId], references: [id])
   downlines     User[]    @relation("UserHierarchy")
 
-  walletBalance Float     @default(0.0)
+  walletBalance  Float     @default(0.0)
+  eWalletBalance Float     @default(0.0)  // AEPS e-wallet
 
   kycStatus     KYCStatus @default(PENDING)
   kycRequests   KYCRequest[]
@@ -47,6 +48,12 @@ model User {
 
   // Staff Permissions (JSON object, applicable for ADMIN/EMPLOYEE roles)
   permissions   Json?
+
+  // Per-user Service Access (JSON object: { aeps: true, bbps: false, ... })
+  serviceAccess Json?
+
+  // PG Charge Overrides for this user
+  pgChargeOverrides UserPGChargeOverride[]
 
   // OTP for Login Verification
   otp           String?
@@ -143,4 +150,71 @@ enum FundRequestStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+// -----------------------------------------------------------------------------
+// NEW COMMISSION MODELS
+// -----------------------------------------------------------------------------
+
+model PGCharge {
+  id         String   @id @default(uuid())
+  method     String   // Card, Netbanking, Upi
+  network    String   // VISA, MASTERCARD, RUPAY, -
+  cardType   String   // credit, debit, -
+  subType    String   // consumer, business, -
+  rate       Float    // e.g. 1.50
+  commission Float    // e.g. 0.00
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model ServiceFee {
+  id          String   @id @default(uuid())
+  serviceKey  String   @unique // e.g. BNK_ACC_VRFY
+  serviceName String
+  feeAmount   Float
+  isActive    Boolean  @default(true)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model PayoutChargeSlab {
+  id            String   @id @default(uuid())
+  minAmount     Float
+  maxAmount     Float
+  serviceCharge Float
+  serviceName   String   @default("Payout")
+  isActive      Boolean  @default(true)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model UserPGChargeOverride {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  method         String   // Card, Netbanking, Upi
+  network        String   // VISA, MASTERCARD, RUPAY, -
+  cardType       String   // credit, debit, -
+  subType        String   // consumer, business, -
+  rate           Float    // e.g. 1.50
+  commission     Float    // e.g. 0.00
+  
+  // A user can only have one override per specific payment method/network combination
+  @@unique([userId, method, network, cardType, subType])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model AdminBankDetail {
+  id            String   @id @default(uuid())
+  bankName      String
+  ifsc          String
+  accountNumber String
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }

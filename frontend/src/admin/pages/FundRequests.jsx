@@ -24,7 +24,8 @@ const FundRequests = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [showRaiseModal, setShowRaiseModal] = useState(false);
-  const [raiseData, setRaiseData] = useState({ amount: '', mode: 'UPI', utr: '', companyAccount: '', remark: '' });
+  const [banks, setBanks] = useState([]);
+  const [raiseData, setRaiseData] = useState({ amount: '', mode: 'UPI', utr: '', companyAccount: '', remark: '', proofImage: null });
 
   const userRole = storage.get('userRole');
   const isAdmin = userRole === 'ADMIN';
@@ -38,7 +39,7 @@ const FundRequests = () => {
   const fetchRequests = async () => {
     setLoading(true);
     try {
-      const statusParam = activeTab === 'pending' ? 'PENDING' : '';
+      const statusParam = activeTab === 'pending' ? 'PENDING' : 'PROCESSED';
       let url = `/funds/requests?status=${statusParam}&search=${search}&page=${page}&type=${requestType}`;
       if (fromDate) url += `&fromDate=${fromDate}`;
       if (toDate) url += `&toDate=${toDate}`;
@@ -53,9 +54,27 @@ const FundRequests = () => {
     }
   };
 
+  const fetchBanks = async () => {
+    try {
+      const response = await apiRequest('/settings/banks', 'GET');
+      setBanks(response || []);
+      if (response && response.length > 0) {
+        setRaiseData(prev => ({ ...prev, companyAccount: `${response[0].bankName} - ${response[0].accountNumber}` }));
+      }
+    } catch (error) {
+      console.error("Error fetching banks:", error);
+    }
+  };
+
   useEffect(() => {
     fetchRequests();
   }, [activeTab, requestType, page]);
+
+  useEffect(() => {
+    if (showRaiseModal) {
+      fetchBanks();
+    }
+  }, [showRaiseModal]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -70,6 +89,7 @@ const FundRequests = () => {
       await apiRequest(`/funds/status/${id}`, 'PATCH', { status: newStatus });
       alert(`Request ${newStatus.toLowerCase()} successfully`);
       fetchRequests();
+      window.dispatchEvent(new Event('balanceUpdated'));
     } catch (error) {
       alert("Error updating status: " + error.message);
     }
@@ -78,11 +98,22 @@ const FundRequests = () => {
   const handleRaiseSubmit = async (e) => {
     e.preventDefault();
     try {
-      await apiRequest('/funds/request', 'POST', raiseData);
+      const formData = new FormData();
+      formData.append('amount', raiseData.amount);
+      formData.append('mode', raiseData.mode);
+      formData.append('utr', raiseData.utr);
+      formData.append('companyAccount', raiseData.companyAccount);
+      formData.append('remark', raiseData.remark);
+      if (raiseData.proofImage) {
+        formData.append('proofImage', raiseData.proofImage);
+      }
+
+      await apiRequest('/funds/request', 'POST', formData, true);
       alert("Fund request raised successfully!");
       setShowRaiseModal(false);
-      setRaiseData({ amount: '', mode: 'UPI', utr: '', companyAccount: '', remark: '' });
+      setRaiseData({ amount: '', mode: 'UPI', utr: '', companyAccount: '', remark: '', proofImage: null });
       fetchRequests();
+      window.dispatchEvent(new Event('balanceUpdated'));
     } catch (error) {
       alert("Error raising request: " + error.message);
     }
@@ -115,13 +146,13 @@ const FundRequests = () => {
               <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200">
                 <button
                   onClick={() => setRequestType('received')}
-                  className={`px-4 py-1.5 rounded-md text-xs font-bold transition-all ${requestType === 'received' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                  className={`px-4 py-1.5 rounded-md text-xs font-bold transition-all ${requestType === 'received' ? 'bg-white text-cyan-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                 >
                   Requests Received
                 </button>
                 <button
                   onClick={() => setRequestType('sent')}
-                  className={`px-4 py-1.5 rounded-md text-xs font-bold transition-all ${requestType === 'sent' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                  className={`px-4 py-1.5 rounded-md text-xs font-bold transition-all ${requestType === 'sent' ? 'bg-white text-cyan-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                 >
                   My Requests
                 </button>
@@ -150,7 +181,7 @@ const FundRequests = () => {
         {!isAdmin && (
           <button
             onClick={() => setShowRaiseModal(true)}
-            className="px-6 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 flex items-center gap-2"
+            className="px-6 py-2.5 bg-cyan-500 text-white rounded-xl text-sm font-bold hover:bg-cyan-600 transition-all shadow-lg shadow-cyan-100 flex items-center gap-2"
           >
             + Raise Fund Request
           </button>
@@ -166,13 +197,13 @@ const FundRequests = () => {
               type="date"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
-              className="px-4 py-2 border border-slate-200 rounded-lg outline-none focus:border-indigo-500 text-slate-600 text-sm md:w-48"
+              className="px-4 py-2 border border-slate-200 rounded-lg outline-none focus:border-cyan-500 text-slate-600 text-sm md:w-48"
             />
             <input
               type="date"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
-              className="px-4 py-2 border border-slate-200 rounded-lg outline-none focus:border-indigo-500 text-slate-600 text-sm md:w-48"
+              className="px-4 py-2 border border-slate-200 rounded-lg outline-none focus:border-cyan-500 text-slate-600 text-sm md:w-48"
             />
             <div className="relative flex-1">
               <input
@@ -180,7 +211,7 @@ const FundRequests = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search UTR, Account, User..."
-                className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none focus:border-indigo-500 text-slate-600 text-sm"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none focus:border-cyan-500 text-slate-600 text-sm"
               />
             </div>
           </div>
@@ -188,7 +219,7 @@ const FundRequests = () => {
           <div className="flex gap-2 shrink-0">
             <button
               onClick={handleSearch}
-              className="px-7 py-2 bg-indigo-500 text-white rounded-lg text-sm font-bold hover:bg-primary/90 transition-all"
+              className="px-7 py-2 bg-cyan-500 text-white rounded-lg text-sm font-bold hover:bg-cyan-600 transition-all"
             >
               Search
             </button>
@@ -212,7 +243,7 @@ const FundRequests = () => {
             <input
               type="text"
               placeholder="Search..."
-              className="w-full border border-slate-200 rounded-lg px-4 py-2 text-sm outline-none focus:border-indigo-500 placeholder:text-slate-400"
+              className="w-full border border-slate-200 rounded-lg px-4 py-2 text-sm outline-none focus:border-cyan-500 placeholder:text-slate-400"
             />
           </div>
         </div>
@@ -262,7 +293,19 @@ const FundRequests = () => {
                     <td className="px-4 py-4 text-sm font-black text-slate-900 text-right">₹{request.amount.toLocaleString()}</td>
                     <td className="px-4 py-4">
                       <div className="text-[11px] font-mono text-slate-600">{request.utr}</div>
-                      <span className="text-[9px] font-bold bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded uppercase">{request.mode}</span>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[9px] font-bold bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded uppercase">{request.mode}</span>
+                        {request.proofImage && (
+                          <a
+                            href={`http://localhost:5000${request.proofImage}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[9px] font-bold text-cyan-600 hover:underline flex items-center gap-0.5"
+                          >
+                            <Eye size={10} /> View Proof
+                          </a>
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-4">
                       <div className="text-[10px] text-slate-500 italic mb-1 truncate max-w-[120px]">{request.remark || 'No remark'}</div>
@@ -300,7 +343,7 @@ const FundRequests = () => {
       {showRaiseModal && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-indigo-50/30">
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-cyan-50/30">
               <h2 className="text-xl font-bold text-slate-800">Raise Fund Request</h2>
               <button onClick={() => setShowRaiseModal(false)} className="text-slate-400 hover:text-slate-600 p-1 hover:bg-slate-100 rounded-full transition-all">
                 <XCircle size={24} />
@@ -316,7 +359,7 @@ const FundRequests = () => {
                     value={raiseData.amount}
                     onChange={(e) => setRaiseData({ ...raiseData, amount: e.target.value })}
                     placeholder="Min 100"
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all font-semibold"
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 outline-none transition-all font-semibold"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -324,7 +367,7 @@ const FundRequests = () => {
                   <select
                     value={raiseData.mode}
                     onChange={(e) => setRaiseData({ ...raiseData, mode: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all font-semibold"
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 outline-none transition-all font-semibold"
                   >
                     <option value="UPI">UPI</option>
                     <option value="NEFT">NEFT / IMPS</option>
@@ -341,18 +384,34 @@ const FundRequests = () => {
                   value={raiseData.utr}
                   onChange={(e) => setRaiseData({ ...raiseData, utr: e.target.value })}
                   placeholder="Paste UTR here"
-                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all font-mono"
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 outline-none transition-all font-mono"
                 />
               </div>
 
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-500 uppercase">Company Bank Account</label>
-                <input
-                  required type="text"
+                <select
+                  required
                   value={raiseData.companyAccount}
                   onChange={(e) => setRaiseData({ ...raiseData, companyAccount: e.target.value })}
-                  placeholder="Bank A/C where you paid"
-                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 outline-none transition-all font-semibold"
+                >
+                  <option value="">Select Bank Account</option>
+                  {banks.map(bank => (
+                    <option key={bank.id} value={`${bank.bankName} - ${bank.accountNumber}`}>
+                      {bank.bankName} ({bank.accountNumber})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-500 uppercase">Transaction Proof (Screenshot)</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setRaiseData({ ...raiseData, proofImage: e.target.files[0] })}
+                  className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 outline-none transition-all text-sm"
                 />
               </div>
 
@@ -362,13 +421,13 @@ const FundRequests = () => {
                   value={raiseData.remark}
                   onChange={(e) => setRaiseData({ ...raiseData, remark: e.target.value })}
                   placeholder="Any additional info..."
-                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all h-20 resize-none"
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 outline-none transition-all h-20 resize-none"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black text-sm hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 mt-4 active:scale-95"
+                className="w-full py-4 bg-cyan-500 text-white rounded-2xl font-black text-sm hover:bg-cyan-600 transition-all shadow-xl shadow-cyan-100 mt-4 active:scale-95"
               >
                 SUBMIT REQUEST
               </button>

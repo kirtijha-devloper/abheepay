@@ -32,9 +32,9 @@ const renderCustomizedLabel = ({ cx, cy }) => {
 };
 
 const servicesData = [
-  { id: 'aeps', title: 'AEPS', icon: <span className="text-2xl font-bold text-slate-700 italic">AE<span className="text-teal-500">P</span>S</span>, borderColor: 'border-purple-200', borderHover: 'hover:border-purple-400', bgHover: 'hover:bg-purple-50' },
+  { id: 'aeps', title: 'AEPS', icon: <span className="text-2xl font-bold text-slate-700 italic">AE<span className="text-teal-500">P</span>S</span>, borderColor: 'border-teal-200', borderHover: 'hover:border-teal-400', bgHover: 'hover:bg-teal-50' },
   { id: 'bbps', title: 'BBPS', icon: <FileText className="w-8 h-8 text-blue-500" strokeWidth={1.5} />, borderColor: 'border-blue-200', borderHover: 'hover:border-blue-400', bgHover: 'hover:bg-blue-50' },
-  { id: 'dmt', title: 'DMT', icon: <Send className="w-8 h-8 text-indigo-500" strokeWidth={1.5} />, borderColor: 'border-indigo-200', borderHover: 'hover:border-indigo-400', bgHover: 'hover:bg-indigo-50' },
+  { id: 'dmt', title: 'DMT', icon: <Send className="w-8 h-8 text-cyan-500" strokeWidth={1.5} />, borderColor: 'border-cyan-200', borderHover: 'hover:border-cyan-400', bgHover: 'hover:bg-cyan-50' },
   { id: 'recharge', title: 'Recharge', icon: <SmartphoneNfc className="w-8 h-8 text-orange-500" strokeWidth={1.5} />, borderColor: 'border-orange-200', borderHover: 'hover:border-orange-400', bgHover: 'hover:bg-orange-50' },
   { id: 'loan', title: 'Loan', icon: <Banknote className="w-8 h-8 text-emerald-500" strokeWidth={1.5} />, borderColor: 'border-emerald-200', borderHover: 'hover:border-emerald-400', bgHover: 'hover:bg-emerald-50' },
   { id: 'credit-card', title: 'Credit Card', icon: <CreditCard className="w-8 h-8 text-slate-700" strokeWidth={1.5} />, borderColor: 'border-slate-200', borderHover: 'hover:border-slate-400', bgHover: 'hover:bg-slate-50' },
@@ -42,8 +42,8 @@ const servicesData = [
   { id: 'payout', title: 'Payout', icon: <Landmark className="w-8 h-8 text-teal-600" strokeWidth={1.5} />, borderColor: 'border-teal-200', borderHover: 'hover:border-teal-400', bgHover: 'hover:bg-teal-50' },
   { id: 'matm', title: 'MATM', icon: <CreditCard className="w-8 h-8 text-amber-500" strokeWidth={1.5} />, borderColor: 'border-amber-200', borderHover: 'hover:border-amber-400', bgHover: 'hover:bg-amber-50' },
   { id: 'bank-account', title: 'Bank Account', icon: <Building2 className="w-8 h-8 text-blue-600" strokeWidth={1.5} />, borderColor: 'border-blue-200', borderHover: 'hover:border-blue-400', bgHover: 'hover:bg-blue-50' },
-  { id: 'pan-apply', title: 'PAN Apply', icon: <ShieldCheck className="w-8 h-8 text-indigo-600" strokeWidth={1.5} />, borderColor: 'border-indigo-200', borderHover: 'hover:border-indigo-400', bgHover: 'hover:bg-indigo-50' },
-  { id: 'ppi-wallet', title: 'PPI Wallet', icon: <Wallet className="w-8 h-8 text-purple-500" strokeWidth={1.5} />, borderColor: 'border-purple-200', borderHover: 'hover:border-purple-400', bgHover: 'hover:bg-purple-50' },
+  { id: 'pan-apply', title: 'PAN Apply', icon: <ShieldCheck className="w-8 h-8 text-cyan-600" strokeWidth={1.5} />, borderColor: 'border-cyan-200', borderHover: 'hover:border-cyan-400', bgHover: 'hover:bg-cyan-50' },
+  { id: 'ppi-wallet', title: 'PPI Wallet', icon: <Wallet className="w-8 h-8 text-teal-500" strokeWidth={1.5} />, borderColor: 'border-teal-200', borderHover: 'hover:border-teal-400', bgHover: 'hover:bg-teal-50' },
   { id: 'travel-booking', title: 'Travel Booking', icon: <Plane className="w-8 h-8 text-sky-500" strokeWidth={1.5} />, borderColor: 'border-sky-200', borderHover: 'hover:border-sky-400', bgHover: 'hover:bg-sky-50' },
   { id: 'travel-booking/travelling-package', title: 'Travelling Package', icon: <Briefcase className="w-8 h-8 text-amber-600" strokeWidth={1.5} />, borderColor: 'border-amber-200', borderHover: 'hover:border-amber-400', bgHover: 'hover:bg-amber-50' },
   { id: 'insurance', title: 'Insurance', icon: <ShieldCheck className="w-8 h-8 text-blue-600" strokeWidth={1.5} />, borderColor: 'border-blue-200', borderHover: 'hover:border-blue-400', bgHover: 'hover:bg-blue-50' },

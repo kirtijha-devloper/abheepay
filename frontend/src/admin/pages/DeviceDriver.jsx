@@ -10,7 +10,7 @@ const DeviceDriver = () => {
       version: "v9.2.0.0",
       os: "Windows 7/8/10/11 (32/64 bit)",
       size: "15.4 MB",
-      icon: <Terminal className="w-12 h-12 text-indigo-500" />
+      icon: <Terminal className="w-12 h-12 text-cyan-500" />
     },
     {
       brand: "Morpho",

@@ -3,9 +3,10 @@ const router = express.Router();
 const fundController = require('../controllers/fundController');
 const auth = require('../middleware/authMiddleware');
 const rbac = require('../middleware/rbacMiddleware');
+const upload = require('../middleware/uploadMiddleware');
 
 // Raise fund request (Any logged in user)
-router.post('/request', auth, fundController.raiseFundRequest);
+router.post('/request', auth, upload.single('proofImage'), fundController.raiseFundRequest);
 
 // Get fund requests (Users see theirs, Admin sees all)
 router.get('/requests', auth, fundController.getFundRequests);

@@ -117,7 +117,7 @@ const MasterDistributorDashboard = ({ displayRole }) => {
               </div>
               <div className="flex gap-4 text-sm font-medium">
                 <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-violet-500"></span> PG
+                  <span className="w-3 h-3 rounded-full bg-cyan-500"></span> PG
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="w-3 h-3 rounded-full bg-teal-400"></span> Payout
@@ -130,8 +130,8 @@ const MasterDistributorDashboard = ({ displayRole }) => {
                 <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorPG5" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#0891b2" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#0891b2" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="colorPayout5" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#2DD4BF" stopOpacity={0.3} />
@@ -145,7 +145,7 @@ const MasterDistributorDashboard = ({ displayRole }) => {
                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
                     cursor={{ stroke: '#cbd5e1', strokeWidth: 1, strokeDasharray: '4 4' }}
                   />
-                  <Area type="monotone" dataKey="PG" stroke="#8B5CF6" strokeWidth={3} fillOpacity={1} fill="url(#colorPG5)" />
+                  <Area type="monotone" dataKey="PG" stroke="#0891b2" strokeWidth={3} fillOpacity={1} fill="url(#colorPG5)" />
                   <Area type="monotone" dataKey="Payout" stroke="#2DD4BF" strokeWidth={3} fillOpacity={1} fill="url(#colorPayout5)" />
                 </AreaChart>
               </ResponsiveContainer>
@@ -155,7 +155,7 @@ const MasterDistributorDashboard = ({ displayRole }) => {
 
         <div className="xl:col-span-1 space-y-8">
 
-          <div className="rounded-3xl p-8 shadow-lg bg-gradient-to-br from-cyan-600 to-indigo-800 border border-cyan-500 relative overflow-hidden">
+          <div className="rounded-3xl p-8 shadow-lg bg-gradient-to-br from-cyan-600 to-teal-800 border border-cyan-500 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full blur-2xl -ml-10 -mb-10"></div>
 
